@@ -5,17 +5,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prototype Django</title>
+    <title>Time-Series Dataset Similarity Explorer</title>
 
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 </head>
-<header>
-
-</header>
 <body>
+    <main class="app-window">
+        <header class="app-header">
+            <h1>Time-Series Dataset Similarity Explorer</h1>
+        </header>
 
+        <section class="dashboard">
+            <div class="panel left-panel">
+                <h2>Datasets</h2>
+
+                <label class="upload-button" for="dataset-upload">
+                    Upload
+                </label>
+                <input id="dataset-upload" type="file" accept=".np,.npy,.npz" multiple hidden>
+
+                <div class="dataset-list" id="dataset-list"></div>
+
+                <details class="method-selector">
+                    <summary>Select method</summary>
+
+                    <div class="method-options">
+                        <button type="button">1</button>
+                        <button type="button">2</button>
+                        <button type="button">3</button>
+                        <button type="button">4</button>
+                    </div>
+                </details>
+            </div>
+
+            <div class="panel center-panel">
+            </div>
+
+            <div class="panel right-panel">
+            </div>
+
+        </section>
+    </main>
+    <script>
+        const uploadInput = document.getElementById("dataset-upload");
+        const datasetList = document.getElementById("dataset-list");
+
+        uploadInput.addEventListener("change", () => {
+            for (const file of uploadInput.files) {
+                const row = document.createElement("label");
+                row.className = "dataset-row";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+
+                const name = document.createElement("span");
+                name.textContent = file.name;
+
+                row.append(checkbox, name);
+                datasetList.append(row);
+            }
+            uploadInput.value = "";
+        });
+    </script>
 </body>
-<footer>
-
-</footer>
 </html>
