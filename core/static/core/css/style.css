@@ -76,9 +76,31 @@ body {
 .dataset-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
     padding: 4px 0;
+}
+
+.dataset-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
     overflow-wrap: anywhere;
+}
+
+.dataset-label span {
+    overflow-wrap: anywhere;
+}
+
+.delete-set-button {
+    padding: 0 5px;
+    border: 0;
+    background: none;
+    color: #f44747;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
 }
 
 .upload-button,

@@ -32,23 +32,29 @@ uploadInput.addEventListener("change", async () => {
         const data = parseDataset(await file.text());
         const filename = file.name.replace(/\.[^.]+$/, "");
 
-        datasetList.replaceChildren();
-        data.forEach(({ label: classLabel, series }, index) => {
-            const row = document.createElement("label");
-            row.className = "dataset-row";
+        const row = document.createElement("div");
+        row.className = "dataset-row";
 
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.value = `${filename}_${index + 1}`;
-            checkbox.dataset.classLabel = classLabel;
-            checkbox.dataset.series = JSON.stringify(series);
+        const setLabel = document.createElement("label");
+        setLabel.className = "dataset-label";
 
-            const name = document.createElement("span");
-            name.textContent = checkbox.value;
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = filename;
+        checkbox.dataset.series = JSON.stringify(data);
 
-            row.append(checkbox, name);
-            datasetList.append(row);
-        });
+        const name = document.createElement("span");
+        name.textContent = filename;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "delete-set-button";
+        deleteButton.setAttribute("aria-label", `Supprimer ${filename}`);
+        deleteButton.textContent = "×";
+
+        setLabel.append(checkbox, name);
+        row.append(setLabel, deleteButton);
+        datasetList.append(row);
 
         importStatus.hidden = true;
         importStatus.textContent = "";
