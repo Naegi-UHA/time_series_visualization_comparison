@@ -44,11 +44,53 @@
                             <button type="button">TWE</button>
                         </div>
                     </details>
-                    <p id="current-method">current method : DTW</p>
+                    <p id="current-method" data-method="dtw">current method : DTW</p>
                 </div>
             </div>
 
             <div class="panel center-panel">
+                <div class="graph-header">
+                    <h2 id="graph-title">Dataset Map</h2>
+
+                    <div class="graph-control">
+                        <details class="graph-selector">
+                            <summary>Select graph</summary>
+                            <div class="graph-options">
+                                <button type="button">Dataset Map</button>
+                                <button type="button">Line Chart</button>
+                                <button type="button">Similarity Matrix</button>
+                            </div>
+                        </details>
+                        <p id="current-graph">Current graph : Dataset Map</p>
+                    </div>
+                </div>
+
+                <div class="graph-preview" id="graph-preview" aria-label="Dataset Map preview">
+                    <div class="map-axis map-axis-x"></div>
+                    <div class="map-axis map-axis-y"></div>
+                    <p id="map-placeholder" class="map-placeholder">
+                        Select exactly two datasets to compare them.
+                    </p>
+                    <div id="dataset-map-result" class="dataset-map-result" hidden>
+                        <div id="map-distance-line" class="map-distance-line"></div>
+                        <div id="map-point-a" class="map-point map-point-a">
+                            <span class="map-point-label"></span>
+                        </div>
+                        <div id="map-point-b" class="map-point map-point-b">
+                            <span class="map-point-label"></span>
+                        </div>
+                        <p id="map-distance-label" class="map-distance-label"></p>
+                    </div>
+                </div>
+                <button
+                    id="compare-button"
+                    class="compare-button"
+                    type="button"
+                    data-url="{% url 'compare-datasets' %}"
+                >
+                    Compare selected sets
+                </button>
+                <p id="comparison-status" class="comparison-status" role="status" aria-live="polite"></p>
             </div>
 
             <div class="panel right-panel">
@@ -56,8 +98,11 @@
 
         </section>
     </main>
+    <form id="csrf-token-form" hidden>{% csrf_token %}</form>
     <script src="{% static 'core/js/upload_dataset.js' %}" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
+    <script src="{% static 'core/js/graph_selection.js' %}" defer></script>
+    <script src="{% static 'core/js/dataset_comparison.js' %}" defer></script>
 </body>
 </html>

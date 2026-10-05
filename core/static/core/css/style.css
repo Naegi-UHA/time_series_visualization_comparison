@@ -49,10 +49,217 @@ body {
     background: #252526;
 }
 
+.center-panel {
+    display: flex;
+    flex-direction: column;
+    padding: 3%;
+}
+
+.graph-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.graph-header h2 {
+    margin: 0;
+    color: #7fc7c1;
+    font-size: clamp(14px, 1.4vw, 19px);
+}
+
+.graph-control {
+    position: relative;
+    flex: 0 0 auto;
+    text-align: right;
+}
+
+.graph-selector {
+    position: relative;
+}
+
+.graph-selector summary {
+    list-style: none;
+}
+
+.graph-selector summary::-webkit-details-marker {
+    display: none;
+}
+
+.graph-selector summary::after {
+    content: " ▾";
+}
+
+.graph-selector summary,
+.graph-options button {
+    display: block;
+    padding: 6px 10px;
+    border: 1px solid #638f8c;
+    border-radius: 4px;
+    background: #303b3b;
+    color: #e1eeee;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.graph-options {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 0;
+    z-index: 4;
+    min-width: 160px;
+    padding: 4px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background: #303030;
+    box-shadow: 0 4px 12px #0008;
+}
+
+.graph-options button {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: none;
+    text-align: left;
+}
+
+#current-graph {
+    margin: 6px 0 0;
+    color: #aaa;
+    font-size: 0.78em;
+}
+
+.graph-preview {
+    position: relative;
+    flex: 1;
+    min-height: 180px;
+    margin-top: 5%;
+    overflow: hidden;
+    border: 1px solid #638f8c;
+    border-radius: 4px;
+    background-color: #202b2b;
+    background-image: linear-gradient(#ffffff0c 1px, transparent 1px),
+        linear-gradient(90deg, #ffffff0c 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.map-axis {
+    position: absolute;
+    background: #8c9a98;
+}
+
+.map-axis-x {
+    right: 10%;
+    bottom: 14%;
+    left: 12%;
+    height: 1px;
+}
+
+.map-axis-y {
+    top: 12%;
+    bottom: 14%;
+    left: 12%;
+    width: 1px;
+}
+
+.map-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(80%, 280px);
+    margin: 0;
+    color: #aebdbb;
+    text-align: center;
+    transform: translate(-50%, -50%);
+}
+
+.dataset-map-result {
+    position: absolute;
+    inset: 0;
+}
+
+.map-distance-line {
+    position: absolute;
+    top: 50%;
+    height: 2px;
+    background: #7fc7c1;
+}
+
+.map-point {
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #e1eeee;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.map-point-a {
+    background: #526bff;
+}
+
+.map-point-b {
+    background: #ff5a65;
+}
+
+.map-point-label {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    width: max-content;
+    max-width: 120px;
+    color: #e1eeee;
+    font-size: 0.8em;
+    overflow-wrap: anywhere;
+    text-align: center;
+    transform: translateX(-50%);
+}
+
+.map-distance-label {
+    position: absolute;
+    top: calc(50% - 34px);
+    left: 50%;
+    margin: 0;
+    color: #aebdbb;
+    font-size: 0.8em;
+    text-align: center;
+    transform: translateX(-50%);
+}
+
+.compare-button {
+    align-self: center;
+    margin-top: 12px;
+    padding: 7px 14px;
+    border: 1px solid #638f8c;
+    border-radius: 4px;
+    background: #303b3b;
+    color: #e1eeee;
+    cursor: pointer;
+    font: inherit;
+}
+
+.compare-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.comparison-status {
+    min-height: 1em;
+    margin: 6px 0 0;
+    color: #aebdbb;
+    font-size: 0.8em;
+    text-align: center;
+}
+
 .left-panel {
     display: flex;
     flex-direction: column;
     padding: 5%;
+    position: relative;
+    z-index: 2;
 }
 
 .left-panel h2 {
@@ -117,14 +324,20 @@ body {
 
 .upload-button,
 .method-selector summary,
+.graph-selector summary,
 .method-options button,
+.graph-options button,
+.compare-button,
 .delete-set-button {
     transition: filter 180ms ease;
 }
 
 .upload-button:hover,
 .method-selector summary:hover,
+.graph-selector summary:hover,
 .method-options button:hover,
+.graph-options button:hover,
+.compare-button:hover:not(:disabled),
 .delete-set-button:hover {
     filter: brightness(1.25);
 }
@@ -149,16 +362,20 @@ body {
     bottom: 0;
     width: max(100%, 180px);
     z-index: 3;
+    max-height: 128px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .method-options button {
     display: block;
     width: 100%;
-    padding: 6%;
+    padding: 8px 10px;
     border: 0;
     background: none;
     color: #ddd;
     cursor: pointer;
+    line-height: 1.2;
 }
 
 #current-method {

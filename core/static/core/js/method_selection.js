@@ -3,7 +3,9 @@ const currentMethod = document.getElementById("current-method");
 
 methodOptions.addEventListener("click", (event) => {
     if (event.target.matches("button")) {
-        currentMethod.textContent = `current method : ${event.target.textContent}`;
+        const method = event.target.textContent.trim();
+        currentMethod.dataset.method = method.toLowerCase();
+        currentMethod.textContent = `current method : ${method}`;
         methodOptions.closest(".method-selector").open = false;
     }
 });
