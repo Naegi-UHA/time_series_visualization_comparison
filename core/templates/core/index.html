@@ -27,22 +27,25 @@
 
                 <div class="dataset-list" id="dataset-list"></div>
 
-                <details class="method-selector">
-                    <summary>Select method</summary>
+                <div class="method-control">
+                    <details class="method-selector">
+                        <summary>Select method</summary>
 
-                    <div class="method-options">
-                        <button type="button">DTW</button>
-                        <button type="button">DTW_GI</button>
-                        <button type="button">SHAPE_DTW</button>
-                        <button type="button">DDTW</button>
-                        <button type="button">WDTW</button>
-                        <button type="button">WDDTW</button>
-                        <button type="button">ADTW</button>
-                        <button type="button">SOFT_DTW</button>
-                        <button type="button">MSM</button>
-                        <button type="button">TWE</button>
-                    </div>
-                </details>
+                        <div class="method-options">
+                            <button type="button">DTW</button>
+                            <button type="button">DTW_GI</button>
+                            <button type="button">SHAPE_DTW</button>
+                            <button type="button">DDTW</button>
+                            <button type="button">WDTW</button>
+                            <button type="button">WDDTW</button>
+                            <button type="button">ADTW</button>
+                            <button type="button">SOFT_DTW</button>
+                            <button type="button">MSM</button>
+                            <button type="button">TWE</button>
+                        </div>
+                    </details>
+                    <p id="current-method">current method : DTW</p>
+                </div>
             </div>
 
             <div class="panel center-panel">
@@ -55,5 +58,6 @@
     </main>
     <script src="{% static 'core/js/upload_dataset.js' %}" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
+    <script src="{% static 'core/js/method_selection.js' %}" defer></script>
 </body>
 </html>
