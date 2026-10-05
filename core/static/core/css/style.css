@@ -67,6 +67,12 @@ body {
     overflow-y: auto;
 }
 
+.import-status {
+    margin: 8px 0 0;
+    color: #f48771;
+    font-size: 0.85em;
+}
+
 .dataset-row {
     display: flex;
     align-items: center;

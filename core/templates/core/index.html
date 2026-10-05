@@ -22,7 +22,8 @@
                 <label class="upload-button" for="dataset-upload">
                     Upload
                 </label>
-                <input id="dataset-upload" type="file" accept=".np,.npy,.npz" multiple hidden>
+                <input id="dataset-upload" type="file" accept=".txt,text/plain" hidden>
+                <p id="import-status" class="import-status" role="status" aria-live="polite" hidden></p>
 
                 <div class="dataset-list" id="dataset-list"></div>
 
