@@ -358,8 +358,8 @@ body {
 .method-options {
     background: #333;
     position: absolute;
-    left: calc(100% + 8px);
-    bottom: 0;
+    left: 0;
+    bottom: calc(100% + 8px);
     width: max(100%, 180px);
     z-index: 3;
     max-height: 128px;

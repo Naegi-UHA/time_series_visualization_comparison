@@ -2,6 +2,40 @@ import numpy as np
 from aeon.distances import get_distance_function
 
 
+def pairwise_dataset_distances(
+    datasets: list[list[list[float]]],
+    method: str,
+) -> np.ndarray:
+    if len(datasets) < 2:
+        raise ValueError("Select at least two datasets.")
+
+    distance_matrix = np.zeros((len(datasets), len(datasets)), dtype=float)
+    for first_index, first_dataset in enumerate(datasets):
+        for second_index in range(first_index + 1, len(datasets)):
+            distance = mean_pairwise_distance(
+                first_dataset,
+                datasets[second_index],
+                method,
+            )
+            distance_matrix[first_index, second_index] = distance
+            distance_matrix[second_index, first_index] = distance
+
+    return distance_matrix
+
+
+def classical_mds(distance_matrix: np.ndarray) -> np.ndarray:
+    squared_distances = distance_matrix ** 2
+    centering = np.eye(len(distance_matrix)) - np.ones_like(distance_matrix) / len(distance_matrix)
+    gram_matrix = -0.5 * centering @ squared_distances @ centering
+    eigenvalues, eigenvectors = np.linalg.eigh(gram_matrix)
+    largest_first = np.argsort(eigenvalues)[::-1][:2]
+    coordinates = eigenvectors[:, largest_first] * np.sqrt(
+        np.maximum(eigenvalues[largest_first], 0)
+    )
+
+    return coordinates
+
+
 def _as_series_array(series: list[float]) -> np.ndarray:
     try:
         values = np.asarray(series, dtype=float)
