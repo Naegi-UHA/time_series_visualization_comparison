@@ -1,6 +1,62 @@
 const uploadInput = document.getElementById("dataset-upload");
 const datasetList = document.getElementById("dataset-list");
 const importStatus = document.getElementById("import-status");
+const pastelColors = [
+    "#F4A6A6", "#F3C08B", "#F2DD8C", "#B9D9A0", "#8FD3C1", "#9CCBE8", "#B7B1E6", "#E4A9D4",
+    "#E98989", "#EFA96B", "#E6CD64", "#9DC97A", "#69BFA8", "#79B8DE", "#9B91D4", "#D77CBF",
+    "#D96B75", "#D98C55", "#C6A94F", "#78A95E", "#4A9B83", "#558FB8", "#7769AF", "#B45D9A",
+];
+let nextDatasetId = 0;
+
+datasetList.addEventListener("click", (event) => {
+    const button = event.target.closest(".color-picker-toggle, .color-swatch, .color-apply-button");
+    if (!button) {
+        return;
+    }
+
+    const row = button.closest(".dataset-row");
+    const colorButton = row.querySelector(".color-picker-toggle");
+    const colorEditor = row.querySelector(".color-editor");
+    const checkbox = row.querySelector('input[type="checkbox"]');
+
+    if (button.matches(".color-picker-toggle")) {
+        colorEditor.hidden = !colorEditor.hidden;
+        colorButton.setAttribute("aria-expanded", String(!colorEditor.hidden));
+        if (!colorEditor.hidden) {
+            const selectedColor = checkbox.dataset.color || "";
+            checkbox.dataset.pendingColor = selectedColor;
+            colorEditor.querySelectorAll(".color-swatch").forEach((swatch) => {
+                const selected = swatch.dataset.color === selectedColor;
+                swatch.classList.toggle("selected", selected);
+                swatch.setAttribute("aria-pressed", String(selected));
+            });
+        }
+        return;
+    }
+
+    if (button.matches(".color-swatch")) {
+        checkbox.dataset.pendingColor = button.dataset.color;
+        colorEditor.querySelectorAll(".color-swatch").forEach((swatch) => {
+            const selected = swatch === button;
+            swatch.classList.toggle("selected", selected);
+            swatch.setAttribute("aria-pressed", String(selected));
+        });
+        return;
+    }
+
+    const color = checkbox.dataset.pendingColor;
+    if (color) {
+        checkbox.dataset.color = color;
+        colorButton.style.setProperty("--selected-color", color);
+        document.querySelectorAll("#dataset-map-result .map-point").forEach((point) => {
+            if (point.dataset.datasetId === checkbox.dataset.datasetId) {
+                point.style.backgroundColor = color;
+            }
+        });
+    }
+    colorEditor.hidden = true;
+    colorButton.setAttribute("aria-expanded", "false");
+});
 
 function parseDataset(text) {
     const rows = text.split(/\r?\n/).filter((line) => line.trim());
@@ -42,9 +98,46 @@ uploadInput.addEventListener("change", async () => {
         checkbox.type = "checkbox";
         checkbox.value = filename;
         checkbox.dataset.series = JSON.stringify(data);
+        checkbox.dataset.datasetId = String(nextDatasetId++);
+        checkbox.dataset.color = "";
 
         const name = document.createElement("span");
         name.textContent = filename;
+
+        const actions = document.createElement("div");
+        actions.className = "dataset-actions";
+
+        const colorButton = document.createElement("button");
+        colorButton.type = "button";
+        colorButton.className = "color-picker-toggle";
+        colorButton.setAttribute("aria-label", `Customize color for ${filename}`);
+        colorButton.setAttribute("aria-expanded", "false");
+        colorButton.textContent = "Color";
+
+        const colorEditor = document.createElement("div");
+        colorEditor.className = "color-editor";
+        colorEditor.hidden = true;
+
+        const palette = document.createElement("div");
+        palette.className = "color-palette";
+        pastelColors.forEach((color, index) => {
+            const swatch = document.createElement("button");
+            swatch.type = "button";
+            swatch.className = "color-swatch";
+            swatch.dataset.color = color;
+            swatch.style.setProperty("--swatch-color", color);
+            swatch.setAttribute("aria-label", `Pastel color ${index + 1}`);
+            swatch.setAttribute("aria-pressed", "false");
+            swatch.title = color;
+            palette.append(swatch);
+        });
+        colorEditor.append(palette);
+
+        const applyColorButton = document.createElement("button");
+        applyColorButton.type = "button";
+        applyColorButton.className = "color-apply-button";
+        applyColorButton.textContent = "Apply";
+        colorEditor.append(applyColorButton);
 
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
@@ -53,7 +146,8 @@ uploadInput.addEventListener("change", async () => {
         deleteButton.textContent = "×";
 
         setLabel.append(checkbox, name);
-        row.append(setLabel, deleteButton);
+        actions.append(colorButton, deleteButton);
+        row.append(setLabel, actions, colorEditor);
         datasetList.append(row);
 
         importStatus.hidden = true;

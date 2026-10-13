@@ -18,7 +18,6 @@
             name: checkbox.value,
             series: JSON.parse(checkbox.dataset.series),
         }));
-
         compareButton.disabled = true;
         comparisonStatus.textContent = "Calculating distance...";
 
@@ -52,6 +51,12 @@
             result.datasets.forEach((dataset, index) => {
                 const point = document.createElement("div");
                 point.className = `map-point ${index % 2 === 0 ? "map-point-a" : "map-point-b"}`;
+                const sourceDataset = selectedSets[index];
+                const color = sourceDataset.dataset.color;
+                if (color) {
+                    point.style.backgroundColor = color;
+                }
+                point.dataset.datasetId = sourceDataset.dataset.datasetId;
                 point.style.left = `${15 + ((dataset.x - minX) / spreadX) * 70}%`;
                 point.style.top = `${85 - ((dataset.y - minY) / spreadY) * 70}%`;
                 point.title = dataset.name;

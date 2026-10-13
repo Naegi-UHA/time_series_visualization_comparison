@@ -179,6 +179,7 @@ body {
 .method-options button:hover,
 .graph-options button:hover,
 .compare-button:hover:not(:disabled),
+.color-apply-button:hover,
 .delete-set-button:hover { filter: brightness(1.25); }
 
 #current-graph { margin: 6px 0 0; color: #aaa; font-size: 0.78em; }
@@ -253,9 +254,74 @@ body {
 
 .dataset-row,
 .dataset-label { display: flex; align-items: center; gap: 8px; }
-.dataset-row { justify-content: space-between; padding: 4px 0; }
+.dataset-row {
+    position: relative;
+    justify-content: space-between;
+    padding: 4px 0;
+}
 .dataset-label { min-width: 0; overflow-wrap: anywhere; }
 .dataset-label span { overflow-wrap: anywhere; }
+
+.dataset-actions { display: flex; align-items: center; gap: 4px; }
+
+.color-picker-toggle {
+    min-width: 34px;
+    padding: 3px 5px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--selected-color, var(--accent));
+    color: #111;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.color-editor {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 24px;
+    z-index: 4;
+    width: min(230px, 90vw);
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface-raised);
+    box-shadow: 0 4px 12px #0008;
+}
+
+.color-editor[hidden] { display: none; }
+
+.color-palette {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.color-swatch {
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    background: var(--swatch-color);
+    cursor: pointer;
+}
+
+.color-swatch:hover { transform: scale(1.12); }
+.color-swatch.selected { border-color: #fff; box-shadow: 0 0 0 1px #111; }
+
+.color-apply-button {
+    display: block;
+    margin: 8px 0 0 auto;
+    padding: 4px 10px;
+    border: 1px solid var(--border-accent);
+    border-radius: 3px;
+    background: var(--control-bg);
+    color: #e1eeee;
+    cursor: pointer;
+    transition: filter 180ms ease;
+}
 
 .delete-set-button {
     padding: 0 5px;
