@@ -7,14 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261014-1">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261014-2">
 </head>
 <body>
     <header class="site-header">
         <h1>Time-Series Dataset Similarity Explorer</h1>
     </header>
-
-    <section class="dashboard">
+    <div class="dashboard">
         <div class="panel left-panel">
             <h2>Datasets</h2>
 
@@ -86,7 +85,14 @@
         <div class="panel right-panel">
         </div>
 
-    </section>
+    </div>
+
+    <div class="site-description">
+        <p>- This interactive tool compares time-series datasets and helps users explore their similarities.</p>
+        <p>- Use the left panel to upload datasets and select the comparison method.</p>
+        <p>- The middle panel displays the comparison results.</p>
+        <p>- The right panel will show the steps involved in the calculation.</p>
+    </div>
 
     <footer class="site-footer">
         <a href="https://github.com/Naegi-UHA/time_series_visualization_comparison" target="_blank" rel="noopener noreferrer">
