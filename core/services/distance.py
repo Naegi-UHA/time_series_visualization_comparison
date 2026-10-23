@@ -1,5 +1,6 @@
 import numpy as np
 from aeon.distances import get_distance_function
+from sklearn.manifold import TSNE
 
 
 def pairwise_dataset_distances(
@@ -23,17 +24,19 @@ def pairwise_dataset_distances(
     return distance_matrix
 
 
-def classical_mds(distance_matrix: np.ndarray) -> np.ndarray:
-    squared_distances = distance_matrix ** 2
-    centering = np.eye(len(distance_matrix)) - np.ones_like(distance_matrix) / len(distance_matrix)
-    gram_matrix = -0.5 * centering @ squared_distances @ centering
-    eigenvalues, eigenvectors = np.linalg.eigh(gram_matrix)
-    largest_first = np.argsort(eigenvalues)[::-1][:2]
-    coordinates = eigenvectors[:, largest_first] * np.sqrt(
-        np.maximum(eigenvalues[largest_first], 0)
-    )
+def tsne_projection(distance_matrix: np.ndarray) -> np.ndarray:
+    dataset_count = len(distance_matrix)
+    if dataset_count < 2:
+        raise ValueError("Select at least two datasets.")
 
-    return coordinates
+    perplexity = min(30.0, max(1.0, (dataset_count - 1) / 3))
+    return TSNE(
+        n_components=2,
+        metric="precomputed",
+        perplexity=perplexity,
+        init="random",
+        random_state=42,
+    ).fit_transform(distance_matrix)
 
 
 def _as_series_array(series: list[float]) -> np.ndarray:

@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
-from .services.distance import classical_mds, pairwise_dataset_distances
+from .services.distance import pairwise_dataset_distances, tsne_projection
 
 
 def index(request):
@@ -52,7 +52,7 @@ def compare_datasets(request):
     except (TypeError, ValueError) as error:
         return JsonResponse({"error": str(error)}, status=400)
 
-    coordinates = classical_mds(distance_matrix)
+    coordinates = tsne_projection(distance_matrix)
     return JsonResponse({
         "method": method.lower(),
         "datasets": [
