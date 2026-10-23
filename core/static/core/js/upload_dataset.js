@@ -8,6 +8,16 @@ const pastelColors = [
 ];
 let nextDatasetId = 0;
 
+function getAvailableDatasetColor() {
+    const usedColors = new Set(
+        [...datasetList.querySelectorAll('input[type="checkbox"]')]
+            .map((checkbox) => checkbox.dataset.color)
+            .filter(Boolean)
+            .map((color) => color.toUpperCase())
+    );
+    return pastelColors.find((color) => !usedColors.has(color.toUpperCase())) || pastelColors[0];
+}
+
 datasetList.addEventListener("click", (event) => {
     const nameButton = event.target.closest(".dataset-name");
     if (nameButton) {
@@ -142,6 +152,7 @@ uploadInput.addEventListener("change", async () => {
     try {
         const data = parseDataset(await file.text());
         const filename = file.name.replace(/\.[^.]+$/, "");
+        const datasetColor = getAvailableDatasetColor();
 
         const row = document.createElement("div");
         row.className = "dataset-row";
@@ -154,7 +165,7 @@ uploadInput.addEventListener("change", async () => {
         checkbox.value = filename;
         checkbox.dataset.series = JSON.stringify(data);
         checkbox.dataset.datasetId = String(nextDatasetId++);
-        checkbox.dataset.color = "";
+        checkbox.dataset.color = datasetColor;
 
         const name = document.createElement("button");
         name.type = "button";
@@ -168,6 +179,7 @@ uploadInput.addEventListener("change", async () => {
         const colorButton = document.createElement("button");
         colorButton.type = "button";
         colorButton.className = "color-picker-toggle";
+        colorButton.style.setProperty("--selected-color", datasetColor);
         colorButton.setAttribute("aria-label", `Customize color for ${filename}`);
         colorButton.setAttribute("aria-expanded", "false");
         colorButton.textContent = "Color";
