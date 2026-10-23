@@ -7,65 +7,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261023-heatmap">
 </head>
 <body>
-    <main class="app-window">
-        <header class="app-header">
-            <h1>Time-Series Dataset Similarity Explorer</h1>
-        </header>
+    <header class="site-header">
+        <h1>Time-Series Dataset Similarity Explorer</h1>
+    </header>
+    <div class="dashboard">
+        <div class="panel left-panel">
+            <h2>Datasets</h2>
 
-        <section class="dashboard">
-            <div class="panel left-panel">
-                <h2>Datasets</h2>
+            <label class="upload-button" for="dataset-upload">
+                Upload
+            </label>
+            <input id="dataset-upload" type="file" accept=".txt,text/plain" hidden>
+            <p id="import-status" class="import-status" role="status" aria-live="polite" hidden></p>
 
-                <label class="upload-button" for="dataset-upload">
-                    Upload
-                </label>
-                <input id="dataset-upload" type="file" accept=".txt,text/plain" hidden>
-                <p id="import-status" class="import-status" role="status" aria-live="polite" hidden></p>
+            <div class="dataset-list" id="dataset-list"></div>
 
-                <div class="dataset-list" id="dataset-list"></div>
+            <div class="method-control">
+                <details class="method-selector">
+                    <summary>Select method</summary>
 
-                <div class="method-control">
-                    <details class="method-selector">
-                        <summary>Select method</summary>
+                    <div class="method-options">
+                        <button type="button">DTW</button>
+                        <button type="button">DTW_GI</button>
+                        <button type="button">SHAPE_DTW</button>
+                        <button type="button">DDTW</button>
+                        <button type="button">WDTW</button>
+                        <button type="button">WDDTW</button>
+                        <button type="button">ADTW</button>
+                        <button type="button">SOFT_DTW</button>
+                        <button type="button">MSM</button>
+                        <button type="button">TWE</button>
+                    </div>
+                </details>
+                <p id="current-method" data-method="dtw">current method : DTW</p>
+            </div>
+        </div>
 
-                        <div class="method-options">
-                            <button type="button">DTW</button>
-                            <button type="button">DTW_GI</button>
-                            <button type="button">SHAPE_DTW</button>
-                            <button type="button">DDTW</button>
-                            <button type="button">WDTW</button>
-                            <button type="button">WDDTW</button>
-                            <button type="button">ADTW</button>
-                            <button type="button">SOFT_DTW</button>
-                            <button type="button">MSM</button>
-                            <button type="button">TWE</button>
+        <div class="panel center-panel">
+            <div class="graph-header">
+                <h2 id="graph-title">Dataset Map</h2>
+
+                <div class="graph-control">
+                    <details class="graph-selector">
+                        <summary>Select graph</summary>
+                        <div class="graph-options">
+                            <button type="button" data-graph="dataset-map">Dataset Map</button>
+                            <button type="button" data-graph="heat-map">Heat Map</button>
                         </div>
                     </details>
-                    <p id="current-method" data-method="dtw">current method : DTW</p>
+                    <p id="current-graph">Current graph : Dataset Map</p>
                 </div>
             </div>
 
-            <div class="panel center-panel">
-                <div class="graph-header">
-                    <h2 id="graph-title">Dataset Map</h2>
-
-                    <div class="graph-control">
-                        <details class="graph-selector">
-                            <summary>Select graph</summary>
-                            <div class="graph-options">
-                                <button type="button">Dataset Map</button>
-                                <button type="button">2</button>
-                                <button type="button">3</button>
-                            </div>
-                        </details>
-                        <p id="current-graph">Current graph : Dataset Map</p>
-                    </div>
-                </div>
-
-                <div class="graph-preview" id="graph-preview" aria-label="Dataset Map preview">
+            <div class="graph-preview" id="graph-preview" data-current-graph="dataset-map">
+                <div class="graph-view" id="dataset-map-view" data-graph-view="dataset-map">
                     <div class="map-axis map-axis-x"></div>
                     <div class="map-axis map-axis-y"></div>
                     <p id="map-placeholder" class="map-placeholder">
@@ -73,27 +71,56 @@
                     </p>
                     <div id="dataset-map-result" class="dataset-map-result" hidden></div>
                 </div>
-                <button
-                    id="compare-button"
-                    class="compare-button"
-                    type="button"
-                    data-url="{% url 'compare-datasets' %}"
-                >
-                    Compare selected sets
-                </button>
-                <p id="comparison-status" class="comparison-status" role="status" aria-live="polite"></p>
+                <div class="graph-view" id="heat-map-view" data-graph-view="heat-map" hidden>
+                    <p id="heatmap-placeholder" class="map-placeholder">
+                        Compare datasets to display their pairwise distances.
+                    </p>
+                    <div id="heatmap-result" class="heatmap-result" hidden></div>
+                </div>
             </div>
+            <button
+                id="compare-button"
+                class="compare-button"
+                type="button"
+                data-url="{% url 'compare-datasets' %}"
+            >
+                Compare selected sets
+            </button>
+            <p id="comparison-status" class="comparison-status" role="status" aria-live="polite"></p>
+        </div>
 
-            <div class="panel right-panel">
+        <div class="panel right-panel">
+            <h2>Pairwise Comparison Graph</h2>
+            <div id="pairwise-graph" class="pairwise-graph" role="img" aria-label="Visualization of pairwise comparisons">
+                <p class="pairwise-graph-placeholder">Pairwise comparison graph will appear here.</p>
             </div>
+        </div>
 
-        </section>
-    </main>
+    </div>
+
+    <div class="site-description">
+        <p>- This interactive tool compares time-series datasets and helps users explore their similarities.</p>
+        <p>- Use the left panel to upload datasets and select the comparison method.</p>
+        <p>- The middle panel displays the comparison results.</p>
+        <p>- The right panel will show the steps involved in the calculation.</p>
+    </div>
+
+    <footer class="site-footer">
+        <a href="https://github.com/Naegi-UHA/time_series_visualization_comparison" target="_blank" rel="noopener noreferrer">
+            Github repository
+        </a>
+        <p>Student : RUNSER Lucas</p>
+        <p>Student  : BERNARDI Nicolas</p>
+        <p>Professor : Ali El Hadi ISMAIL FAWAZ</p>
+    </footer>
+
     <form id="csrf-token-form" hidden>{% csrf_token %}</form>
-    <script src="{% static 'core/js/upload_dataset.js' %}" defer></script>
+    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261014-color2" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
-    <script src="{% static 'core/js/graph_selection.js' %}" defer></script>
-    <script src="{% static 'core/js/dataset_comparison.js' %}" defer></script>
+    <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261023-heatmap" defer></script>
+    <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261023-heatmap" defer></script>
+    <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
+    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261023-heatmap" defer></script>
 </body>
 </html>

@@ -62,6 +62,7 @@ def compare_datasets(request):
         "distances": [
             {
                 "datasets": [names[first_index], names[second_index]],
+                "indices": [first_index, second_index],
                 "distance": float(distance_matrix[first_index, second_index]),
             }
             for first_index in range(len(names))
