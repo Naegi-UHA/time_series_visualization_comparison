@@ -235,6 +235,8 @@ body {
     background-size: 32px 32px;
 }
 
+.graph-view { position: absolute; inset: 0; }
+
 .map-axis { position: absolute; background: #8c9a98; }
 .map-axis-x { right: 10%; bottom: 14%; left: 12%; height: 1px; }
 .map-axis-y { top: 12%; bottom: 14%; left: 12%; width: 1px; }
@@ -281,6 +283,59 @@ body {
     overflow-wrap: anywhere;
 }
 .map-distance-label { top: calc(50% - 34px); margin: 0; color: var(--muted); }
+
+.heatmap-result {
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+    padding: 12px 12px 42px;
+}
+
+.heatmap-table {
+    width: max-content;
+    min-width: 100%;
+    margin-inline: auto;
+    border-spacing: 3px;
+    table-layout: fixed;
+    text-align: center;
+}
+
+.heatmap-table th,
+.heatmap-table td { min-width: 64px; height: 42px; padding: 5px; }
+
+.heatmap-table thead th,
+.heatmap-table tbody th {
+    max-width: 150px;
+    overflow-wrap: anywhere;
+    color: var(--text);
+    font-size: 0.76em;
+    font-weight: 600;
+}
+
+.heatmap-table thead th { vertical-align: bottom; }
+.heatmap-table td { border-radius: 3px; color: #171d22; font-size: 0.78em; font-variant-numeric: tabular-nums; }
+.heatmap-table .heatmap-diagonal { background: #465553; color: var(--text); }
+
+.heatmap-legend {
+    position: absolute;
+    right: 12px;
+    bottom: 9px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.72em;
+}
+
+.heatmap-legend-scale {
+    width: min(40%, 180px);
+    height: 10px;
+    border: 1px solid #ffffff55;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #4575b4, #d73027);
+}
 
 .compare-button { align-self: center; margin-top: 12px; padding: 7px 14px; }
 .compare-button:disabled { cursor: wait; opacity: 0.65; }

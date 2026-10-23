@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261016-2">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261023-heatmap">
 </head>
 <body>
     <header class="site-header">
@@ -54,22 +54,29 @@
                     <details class="graph-selector">
                         <summary>Select graph</summary>
                         <div class="graph-options">
-                            <button type="button">Dataset Map</button>
-                            <button type="button">2</button>
-                            <button type="button">3</button>
+                            <button type="button" data-graph="dataset-map">Dataset Map</button>
+                            <button type="button" data-graph="heat-map">Heat Map</button>
                         </div>
                     </details>
                     <p id="current-graph">Current graph : Dataset Map</p>
                 </div>
             </div>
 
-            <div class="graph-preview" id="graph-preview" aria-label="Dataset Map preview">
-                <div class="map-axis map-axis-x"></div>
-                <div class="map-axis map-axis-y"></div>
-                <p id="map-placeholder" class="map-placeholder">
-                    Select at least two datasets to compare them.
-                </p>
-                <div id="dataset-map-result" class="dataset-map-result" hidden></div>
+            <div class="graph-preview" id="graph-preview" data-current-graph="dataset-map">
+                <div class="graph-view" id="dataset-map-view" data-graph-view="dataset-map">
+                    <div class="map-axis map-axis-x"></div>
+                    <div class="map-axis map-axis-y"></div>
+                    <p id="map-placeholder" class="map-placeholder">
+                        Select at least two datasets to compare them.
+                    </p>
+                    <div id="dataset-map-result" class="dataset-map-result" hidden></div>
+                </div>
+                <div class="graph-view" id="heat-map-view" data-graph-view="heat-map" hidden>
+                    <p id="heatmap-placeholder" class="map-placeholder">
+                        Compare datasets to display their pairwise distances.
+                    </p>
+                    <div id="heatmap-result" class="heatmap-result" hidden></div>
+                </div>
             </div>
             <button
                 id="compare-button"
@@ -111,7 +118,9 @@
     <script src="{% static 'core/js/upload_dataset.js' %}?v=20261014-color2" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
-    <script src="{% static 'core/js/graph_selection.js' %}" defer></script>
-    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261014-color2" defer></script>
+    <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261023-heatmap" defer></script>
+    <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261023-heatmap" defer></script>
+    <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
+    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261023-heatmap" defer></script>
 </body>
 </html>
