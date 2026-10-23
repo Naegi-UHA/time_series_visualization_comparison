@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261023-heatmap">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261023-dataset-rename">
 </head>
 <body>
     <header class="site-header">
@@ -115,12 +115,12 @@
     </footer>
 
     <form id="csrf-token-form" hidden>{% csrf_token %}</form>
-    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261014-color2" defer></script>
+    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261023-dataset-rename" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
     <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261023-heatmap" defer></script>
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261023-heatmap" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
-    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261023-heatmap" defer></script>
+    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261023-dataset-rename" defer></script>
 </body>
 </html>

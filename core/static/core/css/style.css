@@ -352,7 +352,28 @@ body {
     padding: 4px 0;
 }
 .dataset-label { min-width: 0; overflow-wrap: anywhere; }
-.dataset-label span { overflow-wrap: anywhere; }
+.dataset-name {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    overflow-wrap: anywhere;
+    cursor: text;
+}
+.dataset-name:hover { color: var(--accent); }
+.dataset-name-input {
+    width: min(100%, 180px);
+    min-width: 0;
+    padding: 3px 5px;
+    border: 1px solid var(--border-accent);
+    border-radius: 3px;
+    background: var(--control-bg);
+    color: var(--text);
+    font: inherit;
+}
 
 .dataset-actions { display: flex; align-items: center; gap: 4px; }
 

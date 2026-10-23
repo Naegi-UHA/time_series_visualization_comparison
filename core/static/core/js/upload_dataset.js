@@ -9,6 +9,61 @@ const pastelColors = [
 let nextDatasetId = 0;
 
 datasetList.addEventListener("click", (event) => {
+    const nameButton = event.target.closest(".dataset-name");
+    if (nameButton) {
+        const checkbox = nameButton.closest(".dataset-row").querySelector('input[type="checkbox"]');
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "dataset-name-input";
+        input.value = checkbox.value;
+        input.setAttribute("aria-label", `Modifier le nom de ${checkbox.value}`);
+        nameButton.replaceWith(input);
+        input.focus();
+        input.select();
+
+        const finishEditing = (save) => {
+            if (!input.isConnected) {
+                return;
+            }
+
+            const newName = input.value.trim();
+            const name = save && newName ? newName : checkbox.value;
+            checkbox.value = name;
+
+            const replacement = document.createElement("button");
+            replacement.type = "button";
+            replacement.className = "dataset-name";
+            replacement.textContent = name;
+            replacement.setAttribute("aria-label", `Modifier le nom de ${name}`);
+            input.replaceWith(replacement);
+
+            const row = replacement.closest(".dataset-row");
+            row.querySelector(".color-picker-toggle").setAttribute(
+                "aria-label",
+                `Customize color for ${name}`
+            );
+            row.querySelector(".delete-set-button").setAttribute(
+                "aria-label",
+                `Supprimer ${name}`
+            );
+
+            if (save) {
+                document.dispatchEvent(new CustomEvent("datasetrename"));
+            }
+        };
+
+        input.addEventListener("keydown", (keyEvent) => {
+            if (keyEvent.key === "Enter") {
+                keyEvent.preventDefault();
+                finishEditing(true);
+            } else if (keyEvent.key === "Escape") {
+                finishEditing(false);
+            }
+        });
+        input.addEventListener("blur", () => finishEditing(true));
+        return;
+    }
+
     const button = event.target.closest(".color-picker-toggle, .color-swatch, .color-apply-button");
     if (!button) {
         return;
@@ -91,7 +146,7 @@ uploadInput.addEventListener("change", async () => {
         const row = document.createElement("div");
         row.className = "dataset-row";
 
-        const setLabel = document.createElement("label");
+        const setLabel = document.createElement("div");
         setLabel.className = "dataset-label";
 
         const checkbox = document.createElement("input");
@@ -101,8 +156,11 @@ uploadInput.addEventListener("change", async () => {
         checkbox.dataset.datasetId = String(nextDatasetId++);
         checkbox.dataset.color = "";
 
-        const name = document.createElement("span");
+        const name = document.createElement("button");
+        name.type = "button";
+        name.className = "dataset-name";
         name.textContent = filename;
+        name.setAttribute("aria-label", `Modifier le nom de ${filename}`);
 
         const actions = document.createElement("div");
         actions.className = "dataset-actions";

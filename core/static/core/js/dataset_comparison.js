@@ -12,11 +12,19 @@
         const graph = graphPreview.dataset.currentGraph;
         const renderer = window.graphRenderers && window.graphRenderers[graph];
         if (latestResult && renderer) {
-            renderer.render(latestResult, latestSelectedSets);
+            const resultWithCurrentNames = {
+                ...latestResult,
+                datasets: latestResult.datasets.map((dataset, index) => ({
+                    ...dataset,
+                    name: latestSelectedSets[index].value,
+                })),
+            };
+            renderer.render(resultWithCurrentNames, latestSelectedSets);
         }
     }
 
     document.addEventListener("graphchange", renderCurrentGraph);
+    document.addEventListener("datasetrename", renderCurrentGraph);
 
     compareButton.addEventListener("click", async () => {
         const selectedSets = [...datasetList.querySelectorAll("input[type=checkbox]:checked")];
