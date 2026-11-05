@@ -1,0 +1,118 @@
+(function () {
+    const formatOptions = document.querySelector(".export-format-selector .graph-options");
+    const currentFormat = document.getElementById("current-export-format");
+    const downloadButton = document.getElementById("export-download-button");
+    const exportStatus = document.getElementById("export-status");
+    const filenameInput = document.getElementById("export-filename");
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+    let selectedFormat = "csv";
+    let comparisonResult = null;
+
+    function receiveComparison(result) {
+        if (
+            !result
+            || !Array.isArray(result.datasets)
+            || result.datasets.length < 2
+            || !Array.isArray(result.distances)
+            || typeof result.method !== "string"
+        ) {
+            exportStatus.textContent = "The comparison data is invalid.";
+            downloadButton.disabled = true;
+            return;
+        }
+
+        comparisonResult = result;
+        downloadButton.disabled = false;
+        exportStatus.textContent = "Comparison data ready to export.";
+    }
+
+    function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function getExportFilename() {
+        const baseName = filenameInput.value
+            .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "-")
+            .trim()
+            .replace(/[. ]+$/g, "")
+            .replace(/\.(csv|ods)$/i, "")
+            .trim();
+        if (!baseName) {
+            throw new Error("Enter a valid file name.");
+        }
+        return `${baseName}.${selectedFormat}`;
+    }
+
+    formatOptions.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-format]");
+        if (!button) {
+            return;
+        }
+        selectedFormat = button.dataset.format;
+        currentFormat.textContent = `Current format: .${selectedFormat}`;
+        formatOptions.closest(".export-format-selector").open = false;
+    });
+
+    window.addEventListener("message", (event) => {
+        if (
+            event.origin !== window.location.origin
+            || event.source !== window.opener
+            || event.data?.type !== "export-data"
+        ) {
+            return;
+        }
+        receiveComparison(event.data.result);
+    });
+
+    window.addEventListener("load", () => {
+        if (window.opener) {
+            window.opener.postMessage(
+                { type: "request-export-data" },
+                window.location.origin
+            );
+        } else {
+            exportStatus.textContent = "Open this window from the comparison page to export data.";
+        }
+    });
+
+    downloadButton.addEventListener("click", async () => {
+        if (!comparisonResult) {
+            return;
+        }
+
+        downloadButton.disabled = true;
+        exportStatus.textContent = "Preparing your export...";
+        try {
+            const filename = getExportFilename();
+            if (selectedFormat === "csv") {
+                const csv = window.comparisonCsv.buildComparisonCsv(comparisonResult);
+                downloadBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), filename);
+            } else {
+                const response = await fetch(downloadButton.dataset.url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken,
+                    },
+                    body: JSON.stringify(comparisonResult),
+                });
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || "The ODS export could not be created.");
+                }
+                downloadBlob(await response.blob(), filename);
+            }
+            window.close();
+        } catch (error) {
+            exportStatus.textContent = `Export failed: ${error.message}`;
+            downloadButton.disabled = false;
+        }
+    });
+})();

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261105-dataset-map">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261105-export-filename">
 </head>
 <body>
     <header class="site-header">
@@ -103,14 +103,25 @@
                     <div id="heatmap-result" class="heatmap-result" hidden aria-label="Heatmap"></div>
                 </div>
             </div>
-            <button
-                id="compare-button"
-                class="compare-button"
-                type="button"
-                data-url="{% url 'compare-datasets' %}"
-            >
-                Compare selected sets
-            </button>
+            <div class="graph-actions">
+                <button
+                    id="compare-button"
+                    class="compare-button"
+                    type="button"
+                    data-url="{% url 'compare-datasets' %}"
+                >
+                    Compare selected sets
+                </button>
+                <button
+                    id="export-button"
+                    class="compare-button"
+                    type="button"
+                    data-url="{% url 'export-page' %}"
+                    disabled
+                >
+                    Export
+                </button>
+            </div>
             <p id="comparison-status" class="comparison-status" role="status" aria-live="polite"></p>
         </div>
 
@@ -149,6 +160,7 @@
     <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261023-heatmap" defer></script>
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261023-heatmap" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
-    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261023-dataset-rename" defer></script>
+    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261105-export" defer></script>
+    <script src="{% static 'core/js/exportation/index.js' %}?v=20261105-export-filename" defer></script>
 </body>
 </html>

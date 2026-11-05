@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export comparison data</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261105-export-filename">
+</head>
+<body class="export-page">
+    <main class="panel export-panel">
+        <h1>Export comparison data</h1>
+        <p>Export the Dataset Map coordinates and pairwise distances.</p>
+
+        <label class="export-filename-control" for="export-filename">
+            File name
+            <input
+                id="export-filename"
+                name="filename"
+                type="text"
+                value="dataset-comparison"
+                maxlength="120"
+                autocomplete="off"
+                required
+            >
+            <span>The selected format extension will be added automatically.</span>
+        </label>
+
+        <div class="export-format-control">
+            <details class="graph-selector export-format-selector">
+                <summary>Select format</summary>
+                <div class="graph-options">
+                    <button type="button" data-format="csv">.csv</button>
+                    <button type="button" data-format="ods">.ods</button>
+                </div>
+            </details>
+            <p id="current-export-format">Current format: .csv</p>
+        </div>
+
+        <button
+            id="export-download-button"
+            class="compare-button"
+            type="button"
+            data-url="{% url 'export-ods' %}"
+            disabled
+        >
+            Export
+        </button>
+        <p id="export-status" class="comparison-status" role="status" aria-live="polite">
+            Waiting for comparison data...
+        </p>
+    </main>
+
+    <form id="csrf-token-form" hidden>{% csrf_token %}</form>
+    <script src="{% static 'core/js/exportation/csv.js' %}?v=20261105-export" defer></script>
+    <script src="{% static 'core/js/exportation/exportation.js' %}?v=20261105-export-filename" defer></script>
+</body>
+</html>

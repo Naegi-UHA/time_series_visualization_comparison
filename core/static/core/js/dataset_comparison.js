@@ -60,6 +60,9 @@
             latestResult = result;
             latestSelectedSets = selectedSets;
             renderCurrentGraph();
+            document.dispatchEvent(new CustomEvent("comparisoncomplete", {
+                detail: { result, selectedSets },
+            }));
             comparisonStatus.textContent =
                 `${result.datasets.length} datasets compared using ${result.method.toUpperCase()}.`;
         } catch (error) {

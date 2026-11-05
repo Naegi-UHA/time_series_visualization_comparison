@@ -494,8 +494,76 @@ body {
 }
 
 .compare-button { align-self: center; margin-top: 12px; padding: 7px 14px; }
-.compare-button:disabled { cursor: wait; opacity: 0.65; }
+.compare-button:disabled { cursor: not-allowed; opacity: 0.65; }
 .comparison-status { min-height: 1em; margin: 6px 0 0; color: var(--muted); font-size: 0.8em; text-align: center; }
+
+.graph-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.graph-actions .compare-button { margin-top: 0; }
+
+.export-page {
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: none;
+    gap: 0;
+    padding: 24px;
+}
+
+.export-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    width: min(100%, 460px);
+    margin: auto;
+    padding: 24px;
+}
+
+.export-panel h1 {
+    margin: 0;
+    color: #f0f2f2;
+    font-size: 1.4rem;
+}
+
+.export-panel > p { margin: 0; color: var(--muted); }
+
+.export-filename-control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.export-filename-control input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: var(--text);
+    font: inherit;
+}
+
+.export-filename-control span {
+    color: var(--muted);
+    font-size: 0.8em;
+}
+
+.export-format-control { position: relative; z-index: 1; }
+.export-format-selector[open] { z-index: 2; }
+
+#current-export-format { margin: 6px 0 0; color: #aaa; font-size: 0.78em; }
+
+.export-panel #export-download-button { align-self: flex-start; }
+.export-panel .comparison-status { text-align: left; }
 
 .dataset-list { flex: 1; min-height: 0; margin-top: 8%; overflow-y: auto; }
 .import-status { margin: 8px 0 0; color: #f48771; font-size: 0.85em; }
