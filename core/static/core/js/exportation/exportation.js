@@ -70,12 +70,16 @@
             .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "-")
             .trim()
             .replace(/[. ]+$/g, "")
-            .replace(/\.(csv|ods|pdf)$/i, "")
+            .replace(/\.(csv|ods|pdf|tex)$/i, "")
             .trim();
         if (!baseName) {
             throw new Error("Enter a valid file name.");
         }
-        const extension = selectedFormat === "pdf-graph" ? "pdf" : selectedFormat;
+        const extensions = {
+            "pdf-graph": "pdf",
+            "latex-report": "pdf",
+        };
+        const extension = extensions[selectedFormat] || selectedFormat;
         return `${baseName}.${extension}`;
     }
 
@@ -85,9 +89,11 @@
             return;
         }
         selectedFormat = button.dataset.format;
-        const formatLabel = selectedFormat === "pdf-graph"
-            ? ".pdf : only graph"
-            : `.${selectedFormat}`;
+        const formatLabels = {
+            "pdf-graph": ".pdf : only graph",
+            "latex-report": "LaTeX report (.pdf)",
+        };
+        const formatLabel = formatLabels[selectedFormat] || `.${selectedFormat}`;
         currentFormat.textContent = `Current format: ${formatLabel}`;
         formatOptions.closest(".export-format-selector").open = false;
     });
@@ -129,6 +135,12 @@
             } else if (selectedFormat === "pdf-graph") {
                 await window.comparisonPdfGraph.download(comparisonResult, {
                     url: downloadButton.dataset.pdfUrl,
+                    csrfToken,
+                    filename,
+                });
+            } else if (selectedFormat === "latex-report") {
+                await window.comparisonLatexReport.download(comparisonResult, {
+                    url: downloadButton.dataset.latexUrl,
                     csrfToken,
                     filename,
                 });

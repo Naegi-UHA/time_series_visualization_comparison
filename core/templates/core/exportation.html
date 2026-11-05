@@ -33,6 +33,7 @@
                     <button type="button" data-format="csv">.csv</button>
                     <button type="button" data-format="ods">.ods</button>
                     <button type="button" data-format="pdf-graph">.pdf : only graph</button>
+                    <button type="button" data-format="latex-report">LaTeX report (.pdf)</button>
                 </div>
             </details>
             <p id="current-export-format">Current format: .csv</p>
@@ -44,6 +45,7 @@
             type="button"
             data-url="{% url 'export-ods' %}"
             data-pdf-url="{% url 'export-pdf-graph' %}"
+            data-latex-url="{% url 'export-latex-report' %}"
             disabled
         >
             Export
@@ -56,6 +58,7 @@
     <form id="csrf-token-form" hidden>{% csrf_token %}</form>
     <script src="{% static 'core/js/exportation/csv.js' %}?v=20261105-export" defer></script>
     <script src="{% static 'core/js/exportation/pdf_graph.js' %}?v=20261105-pdf-graph" defer></script>
-    <script src="{% static 'core/js/exportation/exportation.js' %}?v=20261105-pdf-graph" defer></script>
+    <script src="{% static 'core/js/exportation/latex_report.js' %}?v=20261105-latex-report" defer></script>
+    <script src="{% static 'core/js/exportation/exportation.js' %}?v=20261105-latex-report" defer></script>
 </body>
 </html>

@@ -2,11 +2,14 @@ import json
 import re
 import zipfile
 from io import BytesIO
+from pathlib import Path
+from unittest.mock import patch
 
 from django.test import SimpleTestCase
 from django.urls import reverse
 
 from core.services.export import validate_comparison_export
+from core.services.latex_report import _latex_source
 
 
 COMPARISON_EXPORT = {
@@ -68,6 +71,8 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertContains(response, ".ods")
         self.assertContains(response, ".pdf : only graph")
         self.assertContains(response, 'data-format="pdf-graph"')
+        self.assertContains(response, "LaTeX report (.pdf)")
+        self.assertContains(response, 'data-format="latex-report"')
         self.assertContains(response, 'id="export-filename"')
         self.assertContains(response, 'value="dataset-comparison"')
 
@@ -134,3 +139,69 @@ class DatasetComparisonViewTests(SimpleTestCase):
             [dataset["color"] for dataset in export_data["datasets"]],
             ["#F4A6A6", "#9CCBE8"],
         )
+
+    @patch("core.services.latex_report.shutil.which")
+    @patch("core.services.latex_report.subprocess.run")
+    def test_export_latex_report_returns_compiled_pdf(
+        self,
+        run_compiler,
+        find_compiler,
+    ):
+        find_compiler.side_effect = lambda name: "tectonic.exe" if name == "tectonic" else None
+
+        def create_pdf(command, **options):
+            output_path = Path(options["cwd"]) / "dataset-comparison.pdf"
+            output_path.write_bytes(b"%PDF-1.7\ncompiled report")
+            return run_compiler.return_value
+
+        run_compiler.return_value.returncode = 0
+        run_compiler.return_value.stdout = ""
+        run_compiler.return_value.stderr = ""
+        run_compiler.side_effect = create_pdf
+
+        response = self.client.post(
+            reverse("export-latex-report"),
+            data=json.dumps(COMPARISON_EXPORT),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertIn('filename="dataset-comparison.pdf"', response["Content-Disposition"])
+        self.assertTrue(response.content.startswith(b"%PDF-"))
+        self.assertEqual(run_compiler.call_args.args[0][0], "tectonic.exe")
+
+    def test_export_latex_report_escapes_special_dataset_name_characters(self):
+        payload = {
+            **COMPARISON_EXPORT,
+            "datasets": [
+                {**COMPARISON_EXPORT["datasets"][0], "name": "first_#"},
+                COMPARISON_EXPORT["datasets"][1],
+            ],
+        }
+
+        report = _latex_source(payload)
+
+        self.assertIn(r"first\_\#", report)
+
+    @patch("core.services.latex_report.shutil.which", return_value=None)
+    def test_export_latex_report_reports_missing_compiler(self, _find_compiler):
+        response = self.client.post(
+            reverse("export-latex-report"),
+            data=json.dumps(COMPARISON_EXPORT),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 503)
+        self.assertIn("Tectonic or pdflatex", response.json()["error"])
+
+    def test_export_latex_report_rejects_invalid_comparison_data(self):
+        payload = {**COMPARISON_EXPORT, "datasets": []}
+
+        response = self.client.post(
+            reverse("export-latex-report"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)

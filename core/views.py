@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST
 
 from .services.distance import pairwise_dataset_distances, tsne_projection
 from .services.export import comparison_export_ods
+from .services.latex_report import LatexCompilationError, comparison_latex_report
 from .services.pdf_graph import comparison_graph_pdf
 
 
@@ -54,6 +55,27 @@ def export_pdf_graph(request):
         return JsonResponse({"error": str(error)}, status=400)
 
     response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="dataset-comparison.pdf"'
+    return response
+
+
+@require_POST
+def export_latex_report(request):
+    try:
+        payload = json.loads(request.body)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JsonResponse({"error": "Invalid JSON request."}, status=400)
+    if not isinstance(payload, dict):
+        return JsonResponse({"error": "The request must be a JSON object."}, status=400)
+
+    try:
+        report = comparison_latex_report(payload)
+    except ValueError as error:
+        return JsonResponse({"error": str(error)}, status=400)
+    except LatexCompilationError as error:
+        return JsonResponse({"error": str(error)}, status=503)
+
+    response = HttpResponse(report, content_type="application/pdf")
     response["Content-Disposition"] = 'attachment; filename="dataset-comparison.pdf"'
     return response
 
