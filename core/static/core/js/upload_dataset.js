@@ -111,6 +111,9 @@ uploadInput.addEventListener("change", async () => {
         checkbox.dataset.series = JSON.stringify(data);
         checkbox.dataset.datasetId = String(nextDatasetId++);
         checkbox.dataset.color = datasetColor;
+        checkbox.dataset.seriesCount = String(data.length);
+        checkbox.dataset.classCount = String(new Set(data.map(({ label }) => label)).size);
+        checkbox.dataset.dimensionCount = "1";
 
         const name = document.createElement("button");
         name.type = "button";

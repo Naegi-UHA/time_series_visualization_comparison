@@ -7,11 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261023-dataset-rename">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261105-compare-spinner">
 </head>
 <body>
     <header class="site-header">
         <h1>Time-Series Dataset Similarity Explorer</h1>
+        <div class="project-info">
+            <a href="https://github.com/Naegi-UHA/time_series_visualization_comparison" target="_blank" rel="noopener noreferrer">
+                Github repository
+            </a>
+            <p>Students: RUNSER Lucas and BERNARDI Nicolas</p>
+            <p>Professor: Ali El Hadi ISMAIL FAWAZ</p>
+        </div>
     </header>
     <div class="dashboard">
         <div class="panel left-panel">
@@ -63,9 +70,27 @@
             </div>
 
             <div class="graph-preview" id="graph-preview" data-current-graph="dataset-map">
+                <button
+                    id="heatmap-reset-view"
+                    class="heatmap-reset-view"
+                    type="button"
+                    aria-label="Reset heatmap position and zoom"
+                    title="Reset heatmap position and zoom"
+                    hidden
+                >
+                    Reset
+                </button>
+                <button
+                    id="dataset-map-lines-toggle"
+                    class="dataset-map-lines-toggle"
+                    type="button"
+                    aria-label="Hide distance lines"
+                    aria-pressed="true"
+                    hidden
+                >
+                    Hide lines
+                </button>
                 <div class="graph-view" id="dataset-map-view" data-graph-view="dataset-map">
-                    <div class="map-axis map-axis-x"></div>
-                    <div class="map-axis map-axis-y"></div>
                     <p id="map-placeholder" class="map-placeholder">
                         Select at least two datasets to compare them.
                     </p>
@@ -75,17 +100,30 @@
                     <p id="heatmap-placeholder" class="map-placeholder">
                         Compare datasets to display their pairwise distances.
                     </p>
-                    <div id="heatmap-result" class="heatmap-result" hidden></div>
+                    <div id="heatmap-result" class="heatmap-result" hidden aria-label="Heatmap"></div>
                 </div>
             </div>
-            <button
-                id="compare-button"
-                class="compare-button"
-                type="button"
-                data-url="{% url 'compare-datasets' %}"
-            >
-                Compare selected sets
-            </button>
+            <div class="graph-actions">
+                <button
+                    id="compare-button"
+                    class="compare-button"
+                    type="button"
+                    data-url="{% url 'compare-datasets' %}"
+                    aria-busy="false"
+                >
+                    <span class="loading-spinner" aria-hidden="true"></span>
+                    <span>Compare selected sets</span>
+                </button>
+                <button
+                    id="export-button"
+                    class="compare-button"
+                    type="button"
+                    data-url="{% url 'export-page' %}"
+                    disabled
+                >
+                    Export
+                </button>
+            </div>
             <p id="comparison-status" class="comparison-status" role="status" aria-live="polite"></p>
         </div>
 
@@ -103,25 +141,32 @@
         <p>- Use the left panel to upload datasets and select the comparison method.</p>
         <p>- The middle panel displays the comparison results.</p>
         <p>- The right panel will show the steps involved in the calculation.</p>
+        <p>- The heatmap uses the selected method to calculate pairwise dataset distances, averaging the distances between their time series. Each distance is shown symmetrically in the matrix; blue indicates smaller distances and red indicates larger ones.</p>
     </div>
 
     <footer class="site-footer">
-        <a href="https://github.com/Naegi-UHA/time_series_visualization_comparison" target="_blank" rel="noopener noreferrer">
-            Github repository
-        </a>
-        <p>Student : RUNSER Lucas</p>
-        <p>Student  : BERNARDI Nicolas</p>
-        <p>Professor : Ali El Hadi ISMAIL FAWAZ</p>
+        <h2>Credits and libraries</h2>
+        <ul class="library-credits">
+            <li><a href="https://www.djangoproject.com/" target="_blank" rel="noopener noreferrer">Django</a></li>
+            <li><a href="https://www.aeon-toolkit.org/" target="_blank" rel="noopener noreferrer">aeon</a></li>
+            <li><a href="https://scikit-learn.org/" target="_blank" rel="noopener noreferrer">scikit-learn</a></li>
+            <li><a href="https://numpy.org/" target="_blank" rel="noopener noreferrer">NumPy</a></li>
+            <li><a href="https://matplotlib.org/" target="_blank" rel="noopener noreferrer">Matplotlib</a></li>
+            <li><a href="https://www.latex-project.org/" target="_blank" rel="noopener noreferrer">LaTeX</a></li>
+            <li><a href="https://ctan.org/pkg/pgf" target="_blank" rel="noopener noreferrer">PGF/TikZ</a></li>
+            <li><a href="https://tectonic-typesetting.github.io/" target="_blank" rel="noopener noreferrer">Tectonic</a></li>
+        </ul>
     </footer>
 
     <form id="csrf-token-form" hidden>{% csrf_token %}</form>
-    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261023-modify-name" defer></script>
+    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261105-dataset-info" defer></script>
     <script src="{% static 'core/js/modify_dataset_name.js' %}?v=20261023-modify-name" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
-    <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261023-heatmap" defer></script>
+    <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261105-dataset-info" defer></script>
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261023-heatmap" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
-    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261023-dataset-rename" defer></script>
+    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261105-compare-spinner" defer></script>
+    <script src="{% static 'core/js/exportation/index.js' %}?v=20261105-latex-report" defer></script>
 </body>
 </html>

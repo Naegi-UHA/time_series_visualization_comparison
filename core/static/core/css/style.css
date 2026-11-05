@@ -26,15 +26,32 @@ body {
 }
 
 .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     padding: 1.5% 3%;
     border-radius: 6px;
     background: var(--page-bg);
 }
 .site-header h1 {
+    flex: 0 1 auto;
     margin: 0;
     color: #f0f2f2;
     font-size: clamp(20px, 2vw, 28px);
 }
+
+.project-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px 16px;
+    color: #bfc5c5;
+    font-size: 0.9rem;
+}
+
+.project-info p { margin: 0; }
 
 .dashboard {
     display: grid;
@@ -60,22 +77,39 @@ body {
 .site-description p { margin: 0; }
 
 .site-footer {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 1% 2%;
+    gap: 8px 24px;
     padding: 1.5% 3%;
     border-radius: 6px;
     background: var(--page-bg);
 }
 
-.site-footer a {
+.site-footer h2 {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.site-footer a,
+.project-info a {
     color: #9ad9d3;
     font-weight: 600;
     text-decoration: none;
 }
-.site-footer a:hover { text-decoration: underline; }
-.site-footer p { margin: 0; color: #bfc5c5; font-size: 0.9rem; }
+.site-footer a:hover,
+.project-info a:hover { text-decoration: underline; }
+
+.library-credits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
 
 .panel {
     min-width: 0;
@@ -235,11 +269,77 @@ body {
     background-size: 32px 32px;
 }
 
+.heatmap-reset-view {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    padding: 4px 8px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: #e1eeee;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8em;
+}
+
+.heatmap-reset-view:hover { filter: brightness(1.25); }
+
+.dataset-map-lines-toggle {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    padding: 4px 8px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: #e1eeee;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8em;
+}
+
+.dataset-map-lines-toggle:hover { filter: brightness(1.25); }
+
 .graph-view { position: absolute; inset: 0; }
 
+.map-axes { position: absolute; inset: 0; pointer-events: none; }
 .map-axis { position: absolute; background: #8c9a98; }
 .map-axis-x { right: 10%; bottom: 14%; left: 12%; height: 1px; }
 .map-axis-y { top: 12%; bottom: 14%; left: 12%; width: 1px; }
+
+.map-axis-tick {
+    position: absolute;
+    color: var(--muted);
+    font-size: clamp(8px, 0.72vw, 11px);
+    line-height: 1;
+}
+
+.map-axis-tick-x {
+    top: 87%;
+    transform: translateX(-50%);
+}
+
+.map-axis-tick-y {
+    left: 10%;
+    transform: translate(-100%, -50%);
+}
+
+.map-axis-label {
+    position: absolute;
+    color: var(--muted);
+    font-size: clamp(8px, 0.75vw, 11px);
+}
+
+.map-axis-label-x { right: 10%; bottom: 3%; }
+.map-axis-label-y {
+    top: 12%;
+    left: 1%;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+}
 
 .map-placeholder {
     position: absolute;
@@ -253,47 +353,147 @@ body {
 }
 
 .dataset-map-result { position: absolute; inset: 0; }
-.map-distance-line { position: absolute; top: 50%; height: 2px; background: var(--accent); }
+
+.map-distance-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.map-distance-lines line {
+    stroke: var(--accent);
+    stroke-opacity: 0.8;
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+}
+
+.dataset-map-result.hide-distance-lines .map-distance-lines,
+.dataset-map-result.hide-distance-lines .map-distance-label { display: none; }
 
 .map-point {
     position: absolute;
     top: 50%;
     width: 18px;
     height: 18px;
+    padding: 0;
     border: 2px solid #e1eeee;
     border-radius: 50%;
+    appearance: none;
+    cursor: pointer;
     transform: translate(-50%, -50%);
 }
 .map-point-a { background: #526bff; }
 .map-point-b { background: #ff5a65; }
+.map-point:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+.dataset-info-card {
+    position: absolute;
+    z-index: 4;
+    width: min(230px, calc(100% - 16px));
+    padding: 12px 14px;
+    border: 1px solid var(--border-accent);
+    border-radius: 6px;
+    background: #202b2b;
+    box-shadow: 0 5px 18px #0008;
+    color: #e1eeee;
+    pointer-events: none;
+}
+
+.dataset-info-card h3 {
+    margin: 0 0 8px;
+    font-size: 0.95em;
+    overflow-wrap: anywhere;
+}
+
+.dataset-info-card dl {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5px 12px;
+    margin: 0;
+    font-size: 0.8em;
+}
+
+.dataset-info-card dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+}
 
 .map-point-label,
 .map-distance-label {
     position: absolute;
-    left: 50%;
     font-size: 0.8em;
     text-align: center;
-    transform: translateX(-50%);
 }
 .map-point-label {
-    top: calc(100% + 8px);
+    left: 50%;
+    bottom: calc(100% + 8px);
     width: max-content;
     max-width: 120px;
     color: #e1eeee;
     overflow-wrap: anywhere;
+    transform: translateX(-50%);
 }
-.map-distance-label { top: calc(50% - 34px); margin: 0; color: var(--muted); }
+.map-distance-label {
+    z-index: 1;
+    padding: 1px 3px;
+    border-radius: 2px;
+    background: #202b2bdb;
+    color: #e1eeee;
+    font-size: clamp(8px, 0.7vw, 10px);
+    line-height: 1.2;
+    white-space: nowrap;
+    transform-origin: center;
+    pointer-events: none;
+}
 
 .heatmap-result {
     position: absolute;
     inset: 0;
-    overflow: auto;
-    padding: 12px 12px 42px;
+    overflow: hidden;
+}
+
+.heatmap-zoom-hint {
+    position: absolute;
+    top: 9px;
+    left: 10px;
+    z-index: 1;
+    color: var(--muted);
+    font-size: 0.8em;
+    pointer-events: none;
+}
+
+.heatmap-viewport {
+    position: absolute;
+    inset: 28px 8px 8px;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.heatmap-viewport.is-dragging { cursor: grabbing; }
+
+.heatmap-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: max-content;
+    transform-origin: center;
 }
 
 .heatmap-table {
     width: max-content;
-    min-width: 100%;
     margin-inline: auto;
     border-spacing: 3px;
     table-layout: fixed;
@@ -317,10 +517,6 @@ body {
 .heatmap-table .heatmap-diagonal { background: #465553; color: var(--text); }
 
 .heatmap-legend {
-    position: absolute;
-    right: 12px;
-    bottom: 9px;
-    left: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -338,8 +534,107 @@ body {
 }
 
 .compare-button { align-self: center; margin-top: 12px; padding: 7px 14px; }
-.compare-button:disabled { cursor: wait; opacity: 0.65; }
+.compare-button:disabled { cursor: not-allowed; opacity: 0.65; }
 .comparison-status { min-height: 1em; margin: 6px 0 0; color: var(--muted); font-size: 0.8em; text-align: center; }
+
+.graph-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.graph-actions .compare-button { margin-top: 0; }
+
+.compare-button[aria-busy="true"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.loading-spinner {
+    display: none;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #7fc7c155;
+    border-top-color: var(--accent);
+    border-radius: 50%;
+}
+
+.compare-button[aria-busy="true"] .loading-spinner {
+    display: inline-block;
+    animation: compare-spinner-rotation 0.8s linear infinite;
+}
+
+@keyframes compare-spinner-rotation {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .compare-button[aria-busy="true"] .loading-spinner {
+        animation: none;
+        border-color: var(--accent);
+    }
+}
+
+.export-page {
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: none;
+    gap: 0;
+    padding: 24px;
+}
+
+.export-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    width: min(100%, 460px);
+    margin: auto;
+    padding: 24px;
+}
+
+.export-panel h1 {
+    margin: 0;
+    color: #f0f2f2;
+    font-size: 1.4rem;
+}
+
+.export-panel > p { margin: 0; color: var(--muted); }
+
+.export-filename-control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.export-filename-control input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: var(--text);
+    font: inherit;
+}
+
+.export-filename-control span {
+    color: var(--muted);
+    font-size: 0.8em;
+}
+
+.export-format-control { position: relative; z-index: 1; }
+.export-format-selector[open] { z-index: 2; }
+
+#current-export-format { margin: 6px 0 0; color: #aaa; font-size: 0.78em; }
+
+.export-panel #export-download-button { align-self: flex-start; }
+.export-panel .comparison-status { text-align: left; }
 
 .dataset-list { flex: 1; min-height: 0; margin-top: 8%; overflow-y: auto; }
 .import-status { margin: 8px 0 0; color: #f48771; font-size: 0.85em; }
@@ -457,6 +752,8 @@ body {
         height: auto;
         padding: 16px;
     }
+    .site-header { align-items: flex-start; flex-direction: column; padding: 14px; }
+    .project-info { justify-content: flex-start; }
     .dashboard {
         grid-template: auto / 1fr;
         gap: 12px;
@@ -465,5 +762,5 @@ body {
     }
     .panel { min-height: 30vh; }
     .site-description { gap: 1em; padding: 0; }
-    .site-footer { grid-template-columns: 1fr; gap: 12px; padding: 14px; }
+    .site-footer { align-items: flex-start; flex-direction: column; gap: 12px; padding: 14px; }
 }
