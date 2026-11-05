@@ -26,15 +26,32 @@ body {
 }
 
 .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     padding: 1.5% 3%;
     border-radius: 6px;
     background: var(--page-bg);
 }
 .site-header h1 {
+    flex: 0 1 auto;
     margin: 0;
     color: #f0f2f2;
     font-size: clamp(20px, 2vw, 28px);
 }
+
+.project-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px 16px;
+    color: #bfc5c5;
+    font-size: 0.9rem;
+}
+
+.project-info p { margin: 0; }
 
 .dashboard {
     display: grid;
@@ -60,22 +77,39 @@ body {
 .site-description p { margin: 0; }
 
 .site-footer {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 1% 2%;
+    gap: 8px 24px;
     padding: 1.5% 3%;
     border-radius: 6px;
     background: var(--page-bg);
 }
 
-.site-footer a {
+.site-footer h2 {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.site-footer a,
+.project-info a {
     color: #9ad9d3;
     font-weight: 600;
     text-decoration: none;
 }
-.site-footer a:hover { text-decoration: underline; }
-.site-footer p { margin: 0; color: #bfc5c5; font-size: 0.9rem; }
+.site-footer a:hover,
+.project-info a:hover { text-decoration: underline; }
+
+.library-credits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
 
 .panel {
     min-width: 0;
@@ -457,6 +491,8 @@ body {
         height: auto;
         padding: 16px;
     }
+    .site-header { align-items: flex-start; flex-direction: column; padding: 14px; }
+    .project-info { justify-content: flex-start; }
     .dashboard {
         grid-template: auto / 1fr;
         gap: 12px;
@@ -465,5 +501,5 @@ body {
     }
     .panel { min-height: 30vh; }
     .site-description { gap: 1em; padding: 0; }
-    .site-footer { grid-template-columns: 1fr; gap: 12px; padding: 14px; }
+    .site-footer { align-items: flex-start; flex-direction: column; gap: 12px; padding: 14px; }
 }

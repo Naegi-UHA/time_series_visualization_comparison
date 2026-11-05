@@ -12,6 +12,13 @@
 <body>
     <header class="site-header">
         <h1>Time-Series Dataset Similarity Explorer</h1>
+        <div class="project-info">
+            <a href="https://github.com/Naegi-UHA/time_series_visualization_comparison" target="_blank" rel="noopener noreferrer">
+                Github repository
+            </a>
+            <p>Students: RUNSER Lucas and BERNARDI Nicolas</p>
+            <p>Professor: Ali El Hadi ISMAIL FAWAZ</p>
+        </div>
     </header>
     <div class="dashboard">
         <div class="panel left-panel">
@@ -103,15 +110,17 @@
         <p>- Use the left panel to upload datasets and select the comparison method.</p>
         <p>- The middle panel displays the comparison results.</p>
         <p>- The right panel will show the steps involved in the calculation.</p>
+        <p>- The heatmap uses the selected method to calculate pairwise dataset distances, averaging the distances between their time series. Each distance is shown symmetrically in the matrix; blue indicates smaller distances and red indicates larger ones.</p>
     </div>
 
     <footer class="site-footer">
-        <a href="https://github.com/Naegi-UHA/time_series_visualization_comparison" target="_blank" rel="noopener noreferrer">
-            Github repository
-        </a>
-        <p>Student : RUNSER Lucas</p>
-        <p>Student  : BERNARDI Nicolas</p>
-        <p>Professor : Ali El Hadi ISMAIL FAWAZ</p>
+        <h2>Credits and libraries</h2>
+        <ul class="library-credits">
+            <li><a href="https://www.djangoproject.com/" target="_blank" rel="noopener noreferrer">Django</a></li>
+            <li><a href="https://www.aeon-toolkit.org/" target="_blank" rel="noopener noreferrer">aeon</a></li>
+            <li><a href="https://scikit-learn.org/" target="_blank" rel="noopener noreferrer">scikit-learn</a></li>
+            <li><a href="https://numpy.org/" target="_blank" rel="noopener noreferrer">NumPy</a></li>
+        </ul>
     </footer>
 
     <form id="csrf-token-form" hidden>{% csrf_token %}</form>
