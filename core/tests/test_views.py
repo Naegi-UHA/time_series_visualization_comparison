@@ -1,16 +1,19 @@
 import json
+import re
 import zipfile
 from io import BytesIO
 
 from django.test import SimpleTestCase
 from django.urls import reverse
 
+from core.services.export import validate_comparison_export
+
 
 COMPARISON_EXPORT = {
     "method": "dtw",
     "datasets": [
-        {"name": "first", "x": -1.25, "y": 2.5},
-        {"name": "second", "x": 1.25, "y": -2.5},
+        {"name": "first", "x": -1.25, "y": 2.5, "color": "#F4A6A6"},
+        {"name": "second", "x": 1.25, "y": -2.5, "color": "#9CCBE8"},
     ],
     "distances": [{"indices": [0, 1], "distance": 3.75}],
 }
@@ -63,6 +66,8 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, ".csv")
         self.assertContains(response, ".ods")
+        self.assertContains(response, ".pdf : only graph")
+        self.assertContains(response, 'data-format="pdf-graph"')
         self.assertContains(response, 'id="export-filename"')
         self.assertContains(response, 'value="dataset-comparison"')
 
@@ -97,3 +102,35 @@ class DatasetComparisonViewTests(SimpleTestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertIn("every dataset pair", response.json()["error"])
+
+    def test_export_pdf_graph_returns_dataset_map_and_heatmap_pages(self):
+        response = self.client.post(
+            reverse("export-pdf-graph"),
+            data=json.dumps(COMPARISON_EXPORT),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertIn("attachment; filename=", response["Content-Disposition"])
+        self.assertTrue(response.content.startswith(b"%PDF-"))
+        self.assertEqual(len(re.findall(rb"/Type\s*/Page\b", response.content)), 2)
+
+    def test_export_pdf_graph_rejects_invalid_comparison_data(self):
+        payload = {**COMPARISON_EXPORT, "datasets": []}
+
+        response = self.client.post(
+            reverse("export-pdf-graph"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_comparison_export_preserves_valid_dataset_colors(self):
+        export_data = validate_comparison_export(COMPARISON_EXPORT)
+
+        self.assertEqual(
+            [dataset["color"] for dataset in export_data["datasets"]],
+            ["#F4A6A6", "#9CCBE8"],
+        )

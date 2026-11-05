@@ -37,6 +37,7 @@
             datasets: latestResult.datasets.map((dataset, index) => ({
                 ...dataset,
                 name: latestSelectedSets[index].value,
+                color: latestSelectedSets[index].dataset.color,
             })),
         };
         exportWindow.postMessage({ type: "export-data", result }, window.location.origin);

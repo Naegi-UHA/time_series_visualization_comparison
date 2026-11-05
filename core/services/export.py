@@ -1,4 +1,5 @@
 import math
+import re
 import tempfile
 from pathlib import Path
 
@@ -40,6 +41,10 @@ def validate_comparison_export(payload):
             "name": dataset["name"],
             "x": float(dataset["x"]),
             "y": float(dataset["y"]),
+            "color": dataset.get("color")
+            if isinstance(dataset.get("color"), str)
+            and re.fullmatch(r"#[0-9A-Fa-f]{6}", dataset["color"])
+            else None,
         })
 
     expected_pairs = {
@@ -64,6 +69,7 @@ def validate_comparison_export(payload):
             raise ValueError("Invalid or duplicate dataset pair.")
         seen_pairs.add(pair)
         normalized_distances.append({
+            "indices": [pair[0], pair[1]],
             "first": normalized_datasets[pair[0]]["name"],
             "second": normalized_datasets[pair[1]]["name"],
             "distance": float(distance),

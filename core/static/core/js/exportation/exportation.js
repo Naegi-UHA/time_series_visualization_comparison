@@ -70,12 +70,13 @@
             .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "-")
             .trim()
             .replace(/[. ]+$/g, "")
-            .replace(/\.(csv|ods)$/i, "")
+            .replace(/\.(csv|ods|pdf)$/i, "")
             .trim();
         if (!baseName) {
             throw new Error("Enter a valid file name.");
         }
-        return `${baseName}.${selectedFormat}`;
+        const extension = selectedFormat === "pdf-graph" ? "pdf" : selectedFormat;
+        return `${baseName}.${extension}`;
     }
 
     formatOptions.addEventListener("click", (event) => {
@@ -84,7 +85,10 @@
             return;
         }
         selectedFormat = button.dataset.format;
-        currentFormat.textContent = `Current format: .${selectedFormat}`;
+        const formatLabel = selectedFormat === "pdf-graph"
+            ? ".pdf : only graph"
+            : `.${selectedFormat}`;
+        currentFormat.textContent = `Current format: ${formatLabel}`;
         formatOptions.closest(".export-format-selector").open = false;
     });
 
@@ -122,6 +126,12 @@
             if (selectedFormat === "csv") {
                 const csv = window.comparisonCsv.buildComparisonCsv(comparisonResult);
                 downloadBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), filename);
+            } else if (selectedFormat === "pdf-graph") {
+                await window.comparisonPdfGraph.download(comparisonResult, {
+                    url: downloadButton.dataset.pdfUrl,
+                    csrfToken,
+                    filename,
+                });
             } else {
                 if (!csrfToken) {
                     throw new Error("Security token unavailable. Reload the export window and try again.");
