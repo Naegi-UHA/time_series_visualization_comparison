@@ -269,6 +269,23 @@ body {
     background-size: 32px 32px;
 }
 
+.heatmap-reset-view {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    padding: 4px 8px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: #e1eeee;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8em;
+}
+
+.heatmap-reset-view:hover { filter: brightness(1.25); }
+
 .graph-view { position: absolute; inset: 0; }
 
 .map-axis { position: absolute; background: #8c9a98; }
@@ -321,13 +338,44 @@ body {
 .heatmap-result {
     position: absolute;
     inset: 0;
-    overflow: auto;
-    padding: 12px 12px 42px;
+    overflow: hidden;
+}
+
+.heatmap-zoom-hint {
+    position: absolute;
+    top: 9px;
+    left: 10px;
+    z-index: 1;
+    color: var(--muted);
+    font-size: 0.8em;
+    pointer-events: none;
+}
+
+.heatmap-viewport {
+    position: absolute;
+    inset: 28px 8px 8px;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.heatmap-viewport.is-dragging { cursor: grabbing; }
+
+.heatmap-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: max-content;
+    transform-origin: center;
 }
 
 .heatmap-table {
     width: max-content;
-    min-width: 100%;
     margin-inline: auto;
     border-spacing: 3px;
     table-layout: fixed;
@@ -351,10 +399,6 @@ body {
 .heatmap-table .heatmap-diagonal { background: #465553; color: var(--text); }
 
 .heatmap-legend {
-    position: absolute;
-    right: 12px;
-    bottom: 9px;
-    left: 12px;
     display: flex;
     align-items: center;
     justify-content: center;

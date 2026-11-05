@@ -70,6 +70,16 @@
             </div>
 
             <div class="graph-preview" id="graph-preview" data-current-graph="dataset-map">
+                <button
+                    id="heatmap-reset-view"
+                    class="heatmap-reset-view"
+                    type="button"
+                    aria-label="Reset heatmap position and zoom"
+                    title="Reset heatmap position and zoom"
+                    hidden
+                >
+                    Reset
+                </button>
                 <div class="graph-view" id="dataset-map-view" data-graph-view="dataset-map">
                     <div class="map-axis map-axis-x"></div>
                     <div class="map-axis map-axis-y"></div>
@@ -82,7 +92,7 @@
                     <p id="heatmap-placeholder" class="map-placeholder">
                         Compare datasets to display their pairwise distances.
                     </p>
-                    <div id="heatmap-result" class="heatmap-result" hidden></div>
+                    <div id="heatmap-result" class="heatmap-result" hidden aria-label="Heatmap"></div>
                 </div>
             </div>
             <button
