@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261023-dataset-rename">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261105-dataset-map">
 </head>
 <body>
     <header class="site-header">
@@ -80,9 +80,17 @@
                 >
                     Reset
                 </button>
+                <button
+                    id="dataset-map-lines-toggle"
+                    class="dataset-map-lines-toggle"
+                    type="button"
+                    aria-label="Hide distance lines"
+                    aria-pressed="true"
+                    hidden
+                >
+                    Hide lines
+                </button>
                 <div class="graph-view" id="dataset-map-view" data-graph-view="dataset-map">
-                    <div class="map-axis map-axis-x"></div>
-                    <div class="map-axis map-axis-y"></div>
                     <p id="map-placeholder" class="map-placeholder">
                         Select at least two datasets to compare them.
                     </p>
