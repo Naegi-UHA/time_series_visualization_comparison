@@ -3,10 +3,38 @@
     const currentFormat = document.getElementById("current-export-format");
     const downloadButton = document.getElementById("export-download-button");
     const exportStatus = document.getElementById("export-status");
-    const filenameInput = document.getElementById("export-filename");
-    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+    let filenameInput = document.getElementById("export-filename");
+    const formatControl = document.querySelector(".export-format-control");
+    const csrfTokenInput = document.querySelector("[name=csrfmiddlewaretoken]");
+    const csrfCookie = document.cookie
+        .split("; ")
+        .find((cookie) => cookie.startsWith("csrftoken="))
+        ?.slice("csrftoken=".length);
+    const csrfToken = csrfTokenInput?.value || csrfCookie;
     let selectedFormat = "csv";
     let comparisonResult = null;
+
+    if (!filenameInput) {
+        const label = document.createElement("label");
+        label.className = "export-filename-control";
+        label.htmlFor = "export-filename";
+        label.append("File name");
+
+        filenameInput = document.createElement("input");
+        filenameInput.id = "export-filename";
+        filenameInput.name = "filename";
+        filenameInput.type = "text";
+        filenameInput.value = "dataset-comparison";
+        filenameInput.maxLength = 120;
+        filenameInput.autocomplete = "off";
+        filenameInput.required = true;
+        label.append(filenameInput);
+
+        const hint = document.createElement("span");
+        hint.textContent = "The selected format extension will be added automatically.";
+        label.append(hint);
+        formatControl.before(label);
+    }
 
     function receiveComparison(result) {
         if (
@@ -95,6 +123,9 @@
                 const csv = window.comparisonCsv.buildComparisonCsv(comparisonResult);
                 downloadBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), filename);
             } else {
+                if (!csrfToken) {
+                    throw new Error("Security token unavailable. Reload the export window and try again.");
+                }
                 const response = await fetch(downloadButton.dataset.url, {
                     method: "POST",
                     headers: {

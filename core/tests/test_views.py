@@ -63,6 +63,8 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, ".csv")
         self.assertContains(response, ".ods")
+        self.assertContains(response, 'id="export-filename"')
+        self.assertContains(response, 'value="dataset-comparison"')
 
     def test_export_ods_returns_spreadsheet_with_both_sheets(self):
         response = self.client.post(

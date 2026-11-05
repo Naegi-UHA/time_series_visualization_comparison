@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Export comparison data</title>
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261105-export-filename">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261105-export-filename-fix">
 </head>
 <body class="export-page">
     <main class="panel export-panel">
@@ -53,6 +53,6 @@
 
     <form id="csrf-token-form" hidden>{% csrf_token %}</form>
     <script src="{% static 'core/js/exportation/csv.js' %}?v=20261105-export" defer></script>
-    <script src="{% static 'core/js/exportation/exportation.js' %}?v=20261105-export-filename" defer></script>
+    <script src="{% static 'core/js/exportation/exportation.js' %}?v=20261105-export-filename-fix" defer></script>
 </body>
 </html>
