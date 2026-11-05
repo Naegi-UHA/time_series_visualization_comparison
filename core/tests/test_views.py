@@ -27,6 +27,10 @@ class DatasetComparisonViewTests(SimpleTestCase):
             {tuple(distance["datasets"]) for distance in response.json()["distances"]},
             {("first", "second"), ("first", "third"), ("second", "third")},
         )
+        self.assertEqual(
+            {tuple(distance["indices"]) for distance in response.json()["distances"]},
+            {(0, 1), (0, 2), (1, 2)},
+        )
         self.assertTrue(all(
             isinstance(dataset["x"], float) and isinstance(dataset["y"], float)
             for dataset in response.json()["datasets"]
