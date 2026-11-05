@@ -38,6 +38,7 @@
             series: JSON.parse(checkbox.dataset.series),
         }));
         compareButton.disabled = true;
+        compareButton.setAttribute("aria-busy", "true");
         comparisonStatus.textContent = "Calculating distance...";
 
         try {
@@ -69,6 +70,7 @@
             comparisonStatus.textContent = `Comparison failed: ${error.message}`;
         } finally {
             compareButton.disabled = false;
+            compareButton.setAttribute("aria-busy", "false");
         }
     });
 })();

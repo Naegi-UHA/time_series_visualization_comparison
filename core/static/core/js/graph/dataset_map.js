@@ -3,6 +3,91 @@
     const mapResult = document.getElementById("dataset-map-result");
     const linesToggle = document.getElementById("dataset-map-lines-toggle");
     let showDistanceLines = true;
+    let activeInfoPoint = null;
+    let datasetInfoCard = null;
+
+    function hideDatasetInfo() {
+        if (!activeInfoPoint) {
+            return;
+        }
+        activeInfoPoint.setAttribute("aria-expanded", "false");
+        datasetInfoCard.remove();
+        activeInfoPoint = null;
+        datasetInfoCard = null;
+    }
+
+    function positionDatasetInfo(point) {
+        if (!datasetInfoCard || !point || !mapResult.clientWidth || !mapResult.clientHeight) {
+            return;
+        }
+
+        const mapBounds = mapResult.getBoundingClientRect();
+        const pointBounds = point.getBoundingClientRect();
+        const cardBounds = datasetInfoCard.getBoundingClientRect();
+        const gap = 12;
+        let left = pointBounds.right - mapBounds.left + gap;
+        if (left + cardBounds.width > mapResult.clientWidth - 8) {
+            left = pointBounds.left - mapBounds.left - cardBounds.width - gap;
+        }
+        left = Math.max(8, Math.min(left, mapResult.clientWidth - cardBounds.width - 8));
+        const top = Math.max(
+            8,
+            Math.min(
+                pointBounds.top - mapBounds.top
+                    + (pointBounds.height - cardBounds.height) / 2,
+                mapResult.clientHeight - cardBounds.height - 8
+            )
+        );
+        datasetInfoCard.style.left = `${left}px`;
+        datasetInfoCard.style.top = `${top}px`;
+    }
+
+    function showDatasetInfo(point) {
+        const source = point.dataset;
+        const name = point.dataset.name;
+        const rows = [
+            ["Time series", source.seriesCount],
+            ["Classes", source.classCount],
+            ["Dimensions", source.dimensionCount],
+        ];
+        const card = document.createElement("section");
+        card.className = "dataset-info-card";
+        card.setAttribute("aria-label", `Dataset information for ${name}`);
+
+        const heading = document.createElement("h3");
+        heading.textContent = name;
+        card.append(heading);
+
+        const list = document.createElement("dl");
+        rows.forEach(([label, value]) => {
+            const term = document.createElement("dt");
+            term.textContent = label;
+            const detail = document.createElement("dd");
+            detail.textContent = value;
+            list.append(term, detail);
+        });
+        card.append(list);
+
+        point.setAttribute("aria-expanded", "true");
+        mapResult.append(card);
+        activeInfoPoint = point;
+        datasetInfoCard = card;
+        requestAnimationFrame(() => positionDatasetInfo(point));
+    }
+
+    mapResult.addEventListener("click", (event) => {
+        const point = event.target.closest(".map-point");
+        if (!point) {
+            return;
+        }
+
+        if (point === activeInfoPoint) {
+            hideDatasetInfo();
+            return;
+        }
+        hideDatasetInfo();
+        showDatasetInfo(point);
+    });
 
     function niceTicks(minimum, maximum, targetCount = 5) {
         const range = maximum - minimum;
@@ -60,8 +145,12 @@
         requestAnimationFrame(updateDistanceLabels);
     });
 
-    const resizeObserver = new ResizeObserver(updateDistanceLabels);
+    const resizeObserver = new ResizeObserver(() => {
+        updateDistanceLabels();
+        positionDatasetInfo(activeInfoPoint);
+    });
     resizeObserver.observe(mapResult);
+    resizeObserver.observe(document.getElementById("graph-preview"));
 
     window.graphRenderers = window.graphRenderers || {};
     window.graphRenderers["dataset-map"] = {
@@ -86,6 +175,8 @@
             const spreadY = maxY - minY;
 
             mapResult.replaceChildren();
+            activeInfoPoint = null;
+            datasetInfoCard = null;
             mapResult.classList.toggle("hide-distance-lines", !showDistanceLines);
 
             const axes = document.createElement("div");
@@ -160,9 +251,14 @@
             mapResult.prepend(lines);
 
             result.datasets.forEach((dataset, index) => {
-                const point = document.createElement("div");
+                const point = document.createElement("button");
+                point.type = "button";
                 point.className = `map-point ${index % 2 === 0 ? "map-point-a" : "map-point-b"}`;
                 const sourceDataset = selectedSets[index];
+                point.dataset.name = dataset.name;
+                point.dataset.seriesCount = sourceDataset.dataset.seriesCount;
+                point.dataset.classCount = sourceDataset.dataset.classCount;
+                point.dataset.dimensionCount = sourceDataset.dataset.dimensionCount;
                 const color = sourceDataset.dataset.color;
                 if (color) {
                     point.style.backgroundColor = color;
@@ -171,6 +267,11 @@
                 point.style.left = `${points[index].x}%`;
                 point.style.top = `${points[index].y}%`;
                 point.title = dataset.name;
+                point.setAttribute(
+                    "aria-label",
+                    `Show dataset information for ${dataset.name}`
+                );
+                point.setAttribute("aria-expanded", "false");
 
                 const label = document.createElement("span");
                 label.className = "map-point-label";

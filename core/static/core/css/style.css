@@ -378,12 +378,52 @@ body {
     top: 50%;
     width: 18px;
     height: 18px;
+    padding: 0;
     border: 2px solid #e1eeee;
     border-radius: 50%;
+    appearance: none;
+    cursor: pointer;
     transform: translate(-50%, -50%);
 }
 .map-point-a { background: #526bff; }
 .map-point-b { background: #ff5a65; }
+.map-point:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+.dataset-info-card {
+    position: absolute;
+    z-index: 4;
+    width: min(230px, calc(100% - 16px));
+    padding: 12px 14px;
+    border: 1px solid var(--border-accent);
+    border-radius: 6px;
+    background: #202b2b;
+    box-shadow: 0 5px 18px #0008;
+    color: #e1eeee;
+    pointer-events: none;
+}
+
+.dataset-info-card h3 {
+    margin: 0 0 8px;
+    font-size: 0.95em;
+    overflow-wrap: anywhere;
+}
+
+.dataset-info-card dl {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5px 12px;
+    margin: 0;
+    font-size: 0.8em;
+}
+
+.dataset-info-card dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+}
 
 .map-point-label,
 .map-distance-label {
@@ -506,6 +546,37 @@ body {
 }
 
 .graph-actions .compare-button { margin-top: 0; }
+
+.compare-button[aria-busy="true"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.loading-spinner {
+    display: none;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #7fc7c155;
+    border-top-color: var(--accent);
+    border-radius: 50%;
+}
+
+.compare-button[aria-busy="true"] .loading-spinner {
+    display: inline-block;
+    animation: compare-spinner-rotation 0.8s linear infinite;
+}
+
+@keyframes compare-spinner-rotation {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .compare-button[aria-busy="true"] .loading-spinner {
+        animation: none;
+        border-color: var(--accent);
+    }
+}
 
 .export-page {
     display: flex;
