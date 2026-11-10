@@ -5,6 +5,7 @@ from io import BytesIO
 from pathlib import Path
 from unittest.mock import patch
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
 from django.urls import reverse
 
@@ -23,6 +24,71 @@ COMPARISON_EXPORT = {
 
 
 class DatasetComparisonViewTests(SimpleTestCase):
+    def test_import_endpoint_returns_multivariate_ts_as_one_dataset(self):
+        uploaded_file = SimpleUploadedFile(
+            "small.ts",
+            b"""@problemName SmallMultivariate
+@timestamps false
+@missing false
+@univariate false
+@dimensions 2
+@equalLength true
+@classLabel true A B
+@data
+1,2,3:4,5,6:A
+2,3,4:5,6,7:B
+""",
+        )
+
+        response = self.client.post(
+            reverse("import-datasets"),
+            {"files": uploaded_file},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        datasets = response.json()["datasets"]
+        self.assertEqual([dataset["name"] for dataset in datasets], ["small"])
+        self.assertEqual([dataset["dimensions"] for dataset in datasets], [2])
+        self.assertEqual(
+            datasets[0]["series"][0]["series"],
+            [
+                [1.0, 2.0, 3.0],
+                [4.0, 5.0, 6.0],
+            ],
+        )
+
+    def test_import_endpoint_rejects_unsupported_file_type(self):
+        uploaded_file = SimpleUploadedFile("dataset.csv", b"a,b,c")
+
+        response = self.client.post(
+            reverse("import-datasets"),
+            {"files": uploaded_file},
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_compare_endpoint_calculates_multivariate_dataset_distances(self):
+        response = self.client.post(
+            reverse("compare-datasets"),
+            data=json.dumps({
+                "method": "dtw",
+                "datasets": [
+                    {
+                        "name": "first",
+                        "series": [{"label": "A", "series": [[0.0, 1.0], [1.0, 2.0]]}],
+                    },
+                    {
+                        "name": "second",
+                        "series": [{"label": "A", "series": [[0.0, 2.0], [1.0, 3.0]]}],
+                    },
+                ],
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()["distances"]), 1)
+
     def test_compare_endpoint_returns_pairwise_distances_and_coordinates(self):
         response = self.client.post(
             reverse("compare-datasets"),
@@ -62,6 +128,15 @@ class DatasetComparisonViewTests(SimpleTestCase):
         )
 
         self.assertEqual(response.status_code, 400)
+
+    def test_main_page_accepts_all_supported_dataset_formats(self):
+        response = self.client.get(reverse("index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'accept=".txt,.ts,.arff,text/plain"')
+        self.assertContains(response, 'id="toggle-all-datasets"')
+        self.assertContains(response, "Toggle all")
+        self.assertContains(response, "Multivariate .ts files are imported as one dataset.")
 
     def test_export_page_renders_format_picker(self):
         response = self.client.get(reverse("export-page"))

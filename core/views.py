@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
+from .services.dataset_import import import_time_series_files
 from .services.distance import pairwise_dataset_distances, tsne_projection
 from .services.export import comparison_export_ods
 from .services.latex_report import LatexCompilationError, comparison_latex_report
@@ -16,6 +17,15 @@ def index(request):
 
 def export_page(request):
     return render(request, "core/exportation.html")
+
+@require_POST
+def import_datasets(request):
+    try:
+        datasets = import_time_series_files(request.FILES.getlist("files"))
+    except ValueError as error:
+        return JsonResponse({"error": str(error)}, status=400)
+
+    return JsonResponse({"datasets": datasets})
 
 
 @require_POST
