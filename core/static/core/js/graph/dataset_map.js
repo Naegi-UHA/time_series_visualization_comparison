@@ -47,6 +47,7 @@
         const name = point.dataset.name;
         const rows = [
             ["Time series", source.seriesCount],
+            ["Time series length", source.seriesLength],
             ["Classes", source.classCount],
             ["Dimensions", source.dimensionCount],
         ];
@@ -257,6 +258,7 @@
                 const sourceDataset = selectedSets[index];
                 point.dataset.name = dataset.name;
                 point.dataset.seriesCount = sourceDataset.dataset.seriesCount;
+                point.dataset.seriesLength = sourceDataset.dataset.seriesLength;
                 point.dataset.classCount = sourceDataset.dataset.classCount;
                 point.dataset.dimensionCount = sourceDataset.dataset.dimensionCount;
                 const color = sourceDataset.dataset.color;

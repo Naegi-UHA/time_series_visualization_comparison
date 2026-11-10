@@ -116,6 +116,16 @@ function addDataset(filename, data) {
     checkbox.dataset.datasetId = String(nextDatasetId++);
     checkbox.dataset.color = datasetColor;
     checkbox.dataset.seriesCount = String(data.series.length);
+    const timeSeriesLengths = data.series.flatMap(({ series }) =>
+        Array.isArray(series[0])
+            ? series.map((dimension) => dimension.length)
+            : [series.length]
+    );
+    const minimumLength = Math.min(...timeSeriesLengths);
+    const maximumLength = Math.max(...timeSeriesLengths);
+    checkbox.dataset.seriesLength = minimumLength === maximumLength
+        ? String(minimumLength)
+        : `${minimumLength}-${maximumLength} (variable)`;
     checkbox.dataset.classCount = String(
         new Set(data.series.map(({ label }) => label).filter(Boolean)).size
     );
