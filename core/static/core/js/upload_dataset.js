@@ -1,12 +1,25 @@
 const uploadInput = document.getElementById("dataset-upload");
 const datasetList = document.getElementById("dataset-list");
 const importStatus = document.getElementById("import-status");
+const toggleAllButton = document.getElementById("toggle-all-datasets");
 const pastelColors = [
     "#F4A6A6", "#F3C08B", "#F2DD8C", "#B9D9A0", "#8FD3C1", "#9CCBE8", "#B7B1E6", "#E4A9D4",
     "#E98989", "#EFA96B", "#E6CD64", "#9DC97A", "#69BFA8", "#79B8DE", "#9B91D4", "#D77CBF",
     "#D96B75", "#D98C55", "#C6A94F", "#78A95E", "#4A9B83", "#558FB8", "#7769AF", "#B45D9A",
 ];
 let nextDatasetId = 0;
+
+toggleAllButton.addEventListener("click", () => {
+    const datasets = [...datasetList.querySelectorAll('input[type="checkbox"]')];
+    if (!datasets.length) {
+        return;
+    }
+
+    const selectAll = datasets.some((dataset) => !dataset.checked);
+    datasets.forEach((dataset) => {
+        dataset.checked = selectAll;
+    });
+});
 
 function getAvailableDatasetColor() {
     const usedColors = new Set(
@@ -77,10 +90,10 @@ function parseDataset(text) {
         const series = values.map(Number);
 
         if (!label || series.length === 0 || series.some((value) => !Number.isFinite(value))) {
-            throw new Error(`Ligne ${index + 1} invalide.`);
+            throw new Error(`Line ${index + 1} is invalid.`);
         }
         if (expectedValueCount !== null && series.length !== expectedValueCount) {
-            throw new Error(`La ligne ${index + 1} n'a pas le même nombre de valeurs que les autres.`);
+            throw new Error(`Line ${index + 1} has a different number of values.`);
         }
 
         expectedValueCount = series.length;
@@ -88,90 +101,129 @@ function parseDataset(text) {
     });
 }
 
+function addDataset(filename, data) {
+    const datasetColor = getAvailableDatasetColor();
+    const row = document.createElement("div");
+    row.className = "dataset-row";
+
+    const setLabel = document.createElement("div");
+    setLabel.className = "dataset-label";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = filename;
+    checkbox.dataset.series = JSON.stringify(data.series);
+    checkbox.dataset.datasetId = String(nextDatasetId++);
+    checkbox.dataset.color = datasetColor;
+    checkbox.dataset.seriesCount = String(data.series.length);
+    checkbox.dataset.classCount = String(
+        new Set(data.series.map(({ label }) => label).filter(Boolean)).size
+    );
+    checkbox.dataset.dimensionCount = String(data.dimensions);
+
+    const name = document.createElement("button");
+    name.type = "button";
+    name.className = "dataset-name";
+    name.textContent = filename;
+    name.setAttribute("aria-label", `Rename ${filename}`);
+
+    const actions = document.createElement("div");
+    actions.className = "dataset-actions";
+
+    const colorButton = document.createElement("button");
+    colorButton.type = "button";
+    colorButton.className = "color-picker-toggle";
+    colorButton.style.setProperty("--selected-color", datasetColor);
+    colorButton.setAttribute("aria-label", `Customize color for ${filename}`);
+    colorButton.setAttribute("aria-expanded", "false");
+    colorButton.textContent = "Color";
+
+    const colorEditor = document.createElement("div");
+    colorEditor.className = "color-editor";
+    colorEditor.hidden = true;
+
+    const palette = document.createElement("div");
+    palette.className = "color-palette";
+    pastelColors.forEach((color, index) => {
+        const swatch = document.createElement("button");
+        swatch.type = "button";
+        swatch.className = "color-swatch";
+        swatch.dataset.color = color;
+        swatch.style.setProperty("--swatch-color", color);
+        swatch.setAttribute("aria-label", `Pastel color ${index + 1}`);
+        swatch.setAttribute("aria-pressed", "false");
+        swatch.title = color;
+        palette.append(swatch);
+    });
+    colorEditor.append(palette);
+
+    const applyColorButton = document.createElement("button");
+    applyColorButton.type = "button";
+    applyColorButton.className = "color-apply-button";
+    applyColorButton.textContent = "Apply";
+    colorEditor.append(applyColorButton);
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "delete-set-button";
+    deleteButton.setAttribute("aria-label", `Delete ${filename}`);
+    deleteButton.textContent = "×";
+
+    setLabel.append(checkbox, name);
+    actions.append(colorButton, deleteButton);
+    row.append(setLabel, actions, colorEditor);
+    datasetList.append(row);
+}
+
+async function loadAeonDatasets(files) {
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files", file));
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]")?.value;
+    const response = await fetch(uploadInput.dataset.importUrl, {
+        method: "POST",
+        headers: csrfToken ? { "X-CSRFToken": csrfToken } : {},
+        body: formData,
+    });
+    const result = await response.json();
+    if (!response.ok) {
+        throw new Error(result.error || "The selected dataset files could not be loaded.");
+    }
+    return result.datasets;
+}
+
 uploadInput.addEventListener("change", async () => {
-    const file = uploadInput.files[0];
-    if (!file) {
+    const files = [...uploadInput.files];
+    if (!files.length) {
         return;
     }
 
     try {
-        const data = parseDataset(await file.text());
-        const filename = file.name.replace(/\.[^.]+$/, "");
-        const datasetColor = getAvailableDatasetColor();
+        const unsupported = files.find((file) => !/\.(txt|ts|arff)$/i.test(file.name));
+        if (unsupported) {
+            throw new Error(`Unsupported file type: ${unsupported.name}`);
+        }
 
-        const row = document.createElement("div");
-        row.className = "dataset-row";
-
-        const setLabel = document.createElement("div");
-        setLabel.className = "dataset-label";
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = filename;
-        checkbox.dataset.series = JSON.stringify(data);
-        checkbox.dataset.datasetId = String(nextDatasetId++);
-        checkbox.dataset.color = datasetColor;
-        checkbox.dataset.seriesCount = String(data.length);
-        checkbox.dataset.classCount = String(new Set(data.map(({ label }) => label)).size);
-        checkbox.dataset.dimensionCount = "1";
-
-        const name = document.createElement("button");
-        name.type = "button";
-        name.className = "dataset-name";
-        name.textContent = filename;
-        name.setAttribute("aria-label", `Modifier le nom de ${filename}`);
-
-        const actions = document.createElement("div");
-        actions.className = "dataset-actions";
-
-        const colorButton = document.createElement("button");
-        colorButton.type = "button";
-        colorButton.className = "color-picker-toggle";
-        colorButton.style.setProperty("--selected-color", datasetColor);
-        colorButton.setAttribute("aria-label", `Customize color for ${filename}`);
-        colorButton.setAttribute("aria-expanded", "false");
-        colorButton.textContent = "Color";
-
-        const colorEditor = document.createElement("div");
-        colorEditor.className = "color-editor";
-        colorEditor.hidden = true;
-
-        const palette = document.createElement("div");
-        palette.className = "color-palette";
-        pastelColors.forEach((color, index) => {
-            const swatch = document.createElement("button");
-            swatch.type = "button";
-            swatch.className = "color-swatch";
-            swatch.dataset.color = color;
-            swatch.style.setProperty("--swatch-color", color);
-            swatch.setAttribute("aria-label", `Pastel color ${index + 1}`);
-            swatch.setAttribute("aria-pressed", "false");
-            swatch.title = color;
-            palette.append(swatch);
-        });
-        colorEditor.append(palette);
-
-        const applyColorButton = document.createElement("button");
-        applyColorButton.type = "button";
-        applyColorButton.className = "color-apply-button";
-        applyColorButton.textContent = "Apply";
-        colorEditor.append(applyColorButton);
-
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.className = "delete-set-button";
-        deleteButton.setAttribute("aria-label", `Supprimer ${filename}`);
-        deleteButton.textContent = "×";
-
-        setLabel.append(checkbox, name);
-        actions.append(colorButton, deleteButton);
-        row.append(setLabel, actions, colorEditor);
-        datasetList.append(row);
+        const textDatasets = await Promise.all(
+            files
+                .filter((file) => /\.txt$/i.test(file.name))
+                .map(async (file) => ({
+                    name: file.name.replace(/\.[^.]+$/, ""),
+                    series: parseDataset(await file.text()),
+                    dimensions: 1,
+                }))
+        );
+        const aeonFiles = files.filter((file) => /\.(ts|arff)$/i.test(file.name));
+        if (aeonFiles.length) {
+            importStatus.textContent = "Loading time-series files...";
+            importStatus.hidden = false;
+        }
+        const importedDatasets = aeonFiles.length ? await loadAeonDatasets(aeonFiles) : [];
+        [...textDatasets, ...importedDatasets].forEach(({ name, ...data }) => addDataset(name, data));
 
         importStatus.hidden = true;
         importStatus.textContent = "";
     } catch (error) {
-        importStatus.textContent = `Import impossible : ${error.message}`;
+        importStatus.textContent = `Import failed: ${error.message}`;
         importStatus.hidden = false;
     } finally {
         uploadInput.value = "";

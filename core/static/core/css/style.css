@@ -58,7 +58,7 @@ body {
     grid-template: minmax(0, 1fr) / 1fr 1.65fr 1.45fr;
     gap: 1%;
     width: 95%;
-    min-height: 80vh;
+    height: 90vh;
     margin-inline: auto;
     padding: 2%;
     border-radius: 8px;
@@ -123,6 +123,15 @@ body {
 .center-panel { display: flex; flex-direction: column; }
 .left-panel { position: relative; z-index: 2; padding: 5%; }
 .left-panel h2 { margin-top: 0; font-size: clamp(13px, 1.3vw, 18px); }
+.dataset-upload-hint {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 0.75em;
+    line-height: 1.4;
+}
+.toggle-all-button {
+    margin-top: 8px;
+}
 .center-panel { padding: 3%; }
 .right-panel { display: flex; flex-direction: column; padding: 3%; }
 .right-panel h2 { margin: 0 0 12px; color: var(--accent); font-size: clamp(14px, 1.4vw, 19px); }
@@ -757,6 +766,7 @@ body {
     .dashboard {
         grid-template: auto / 1fr;
         gap: 12px;
+        height: auto;
         min-height: 0;
         padding: 12px;
     }

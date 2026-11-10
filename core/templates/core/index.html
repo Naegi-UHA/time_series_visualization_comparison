@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261105-compare-spinner">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261110-dataset-list-scroll">
 </head>
 <body>
     <header class="site-header">
@@ -27,7 +27,20 @@
             <label class="upload-button" for="dataset-upload">
                 Upload
             </label>
-            <input id="dataset-upload" type="file" accept=".txt,text/plain" hidden>
+            <button id="toggle-all-datasets" class="upload-button toggle-all-button" type="button">
+                Toggle all
+            </button>
+            <p class="dataset-upload-hint">
+                Multivariate .ts files are imported as one dataset. Upload each .arff dimension file separately.
+            </p>
+            <input
+                id="dataset-upload"
+                type="file"
+                accept=".txt,.ts,.arff,text/plain"
+                data-import-url="{% url 'import-datasets' %}"
+                multiple
+                hidden
+            >
             <p id="import-status" class="import-status" role="status" aria-live="polite" hidden></p>
 
             <div class="dataset-list" id="dataset-list"></div>
@@ -159,7 +172,7 @@
     </footer>
 
     <form id="csrf-token-form" hidden>{% csrf_token %}</form>
-    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261105-dataset-info" defer></script>
+    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261110-separate-dimensions" defer></script>
     <script src="{% static 'core/js/modify_dataset_name.js' %}?v=20261023-modify-name" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
