@@ -5,8 +5,16 @@
     const comparisonStatus = document.getElementById("comparison-status");
     const graphPreview = document.getElementById("graph-preview");
     const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+    const comparisonCache = new Map();
     let latestResult = null;
     let latestSelectedSets = [];
+
+    function getCacheKey(method, selectedSets) {
+        return JSON.stringify([
+            method,
+            selectedSets.map((checkbox) => checkbox.dataset.datasetId),
+        ]);
+    }
 
     function renderCurrentGraph() {
         const graph = graphPreview.dataset.currentGraph;
@@ -42,20 +50,25 @@
         comparisonStatus.textContent = "Calculating distance...";
 
         try {
-            const response = await fetch(compareButton.dataset.url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken,
-                },
-                body: JSON.stringify({
-                    method: currentMethod.dataset.method,
-                    datasets,
-                }),
-            });
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error || "The comparison could not be completed.");
+            const method = currentMethod.dataset.method;
+            const cacheKey = getCacheKey(method, selectedSets);
+            let result = comparisonCache.get(cacheKey);
+            const cached = result !== undefined;
+
+            if (!cached) {
+                const response = await fetch(compareButton.dataset.url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken,
+                    },
+                    body: JSON.stringify({ method, datasets }),
+                });
+                result = await response.json();
+                if (!response.ok) {
+                    throw new Error(result.error || "The comparison could not be completed.");
+                }
+                comparisonCache.set(cacheKey, result);
             }
 
             latestResult = result;
@@ -64,8 +77,9 @@
             document.dispatchEvent(new CustomEvent("comparisoncomplete", {
                 detail: { result, selectedSets },
             }));
-            comparisonStatus.textContent =
-                `${result.datasets.length} datasets compared using ${result.method.toUpperCase()}.`;
+            comparisonStatus.textContent = cached
+                ? `Cached result reused: ${result.datasets.length} datasets compared using ${result.method.toUpperCase()}.`
+                : `${result.datasets.length} datasets compared using ${result.method.toUpperCase()}.`;
         } catch (error) {
             comparisonStatus.textContent = `Comparison failed: ${error.message}`;
         } finally {
