@@ -7,6 +7,19 @@ from odf.opendocument import OpenDocumentSpreadsheet
 from odf.table import Table, TableCell, TableRow
 from odf.text import P
 
+HEATMAP_COLORMAPS = frozenset({
+    "Oranges",
+    "Blues",
+    "Greens",
+    "Purples",
+    "Reds",
+    "viridis",
+    "plasma",
+    "inferno",
+    "magma",
+    "cividis",
+})
+
 
 def _is_finite_number(value):
     if not isinstance(value, (int, float)) or isinstance(value, bool):
@@ -17,16 +30,34 @@ def _is_finite_number(value):
         return False
 
 
+def contrasting_text_color(rgb):
+    linearized = [
+        channel / 12.92
+        if channel <= 0.04045
+        else ((channel + 0.055) / 1.055) ** 2.4
+        for channel in rgb[:3]
+    ]
+    luminance = (
+        0.2126 * linearized[0]
+        + 0.7152 * linearized[1]
+        + 0.0722 * linearized[2]
+    )
+    return "black" if luminance >= 0.179 else "white"
+
+
 def validate_comparison_export(payload):
     datasets = payload.get("datasets")
     distances = payload.get("distances")
     method = payload.get("method")
+    heatmap_colormap = payload.get("heatmap_colormap", "Oranges")
     if not isinstance(datasets, list) or len(datasets) < 2:
         raise ValueError("At least two compared datasets are required.")
     if not isinstance(distances, list):
         raise ValueError("Pairwise distances are missing.")
     if not isinstance(method, str):
         raise ValueError("The comparison method is missing.")
+    if not isinstance(heatmap_colormap, str) or heatmap_colormap not in HEATMAP_COLORMAPS:
+        raise ValueError("The heatmap color gradient is not supported.")
 
     normalized_datasets = []
     for dataset in datasets:
@@ -80,6 +111,7 @@ def validate_comparison_export(payload):
 
     return {
         "method": method,
+        "heatmap_colormap": heatmap_colormap,
         "datasets": normalized_datasets,
         "distances": normalized_distances,
     }

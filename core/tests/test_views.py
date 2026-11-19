@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
 from django.urls import reverse
 
-from core.services.export import validate_comparison_export
+from core.services.export import contrasting_text_color, validate_comparison_export
 from core.services.latex_report import _latex_source
 
 
@@ -24,6 +24,10 @@ COMPARISON_EXPORT = {
 
 
 class DatasetComparisonViewTests(SimpleTestCase):
+    def test_export_text_color_uses_relative_luminance(self):
+        self.assertEqual(contrasting_text_color((0.0, 0.0, 0.0)), "white")
+        self.assertEqual(contrasting_text_color((1.0, 1.0, 1.0)), "black")
+
     def test_import_endpoint_returns_multivariate_ts_as_one_dataset(self):
         uploaded_file = SimpleUploadedFile(
             "small.ts",
@@ -136,6 +140,8 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertContains(response, 'accept=".txt,.ts,.arff,text/plain"')
         self.assertContains(response, 'id="toggle-all-datasets"')
         self.assertContains(response, "Toggle all")
+        self.assertContains(response, 'id="heatmap-color-selector"')
+        self.assertContains(response, 'data-colormap="Oranges" aria-pressed="true"')
 
     def test_export_page_renders_format_picker(self):
         response = self.client.get(reverse("export-page"))
@@ -185,7 +191,7 @@ class DatasetComparisonViewTests(SimpleTestCase):
     def test_export_pdf_graph_returns_dataset_map_and_heatmap_pages(self):
         response = self.client.post(
             reverse("export-pdf-graph"),
-            data=json.dumps(COMPARISON_EXPORT),
+            data=json.dumps({**COMPARISON_EXPORT, "heatmap_colormap": "viridis"}),
             content_type="application/json",
         )
 
@@ -213,6 +219,26 @@ class DatasetComparisonViewTests(SimpleTestCase):
             [dataset["color"] for dataset in export_data["datasets"]],
             ["#F4A6A6", "#9CCBE8"],
         )
+
+    def test_comparison_export_preserves_selected_heatmap_colormap(self):
+        export_data = validate_comparison_export({
+            **COMPARISON_EXPORT,
+            "heatmap_colormap": "viridis",
+        })
+
+        self.assertEqual(export_data["heatmap_colormap"], "viridis")
+
+    def test_comparison_export_defaults_heatmap_colormap_to_oranges(self):
+        export_data = validate_comparison_export(COMPARISON_EXPORT)
+
+        self.assertEqual(export_data["heatmap_colormap"], "Oranges")
+
+    def test_comparison_export_rejects_unsupported_heatmap_colormap(self):
+        with self.assertRaisesMessage(ValueError, "color gradient is not supported"):
+            validate_comparison_export({
+                **COMPARISON_EXPORT,
+                "heatmap_colormap": "not-a-colormap",
+            })
 
     @patch("core.services.latex_report.shutil.which")
     @patch("core.services.latex_report.subprocess.run")
@@ -257,6 +283,17 @@ class DatasetComparisonViewTests(SimpleTestCase):
         report = _latex_source(payload)
 
         self.assertIn(r"first\_\#", report)
+
+    def test_export_latex_report_uses_selected_heatmap_colormap(self):
+        report = _latex_source({
+            **COMPARISON_EXPORT,
+            "heatmap_colormap": "viridis",
+        })
+
+        self.assertIn(r"\definecolor{heatcell0_1}{HTML}{21918C}", report)
+        self.assertIn(r"\texttt{viridis} colormap", report)
+        self.assertIn(r"\node[text=black]", report)
+        self.assertIn(r"\node[text=white]", report)
 
     @patch("core.services.latex_report.shutil.which", return_value=None)
     def test_export_latex_report_reports_missing_compiler(self, _find_compiler):

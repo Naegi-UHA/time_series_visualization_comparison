@@ -179,14 +179,18 @@ body {
 .method-selector { position: relative; }
 
 .graph-selector summary,
-.method-selector summary { list-style: none; }
+.method-selector summary,
+.heatmap-color-selector summary { list-style: none; }
 .graph-selector summary::-webkit-details-marker,
-.method-selector summary::-webkit-details-marker { display: none; }
+.method-selector summary::-webkit-details-marker,
+.heatmap-color-selector summary::-webkit-details-marker { display: none; }
 .graph-selector summary::after { content: " ▾"; }
+.heatmap-color-selector summary::after { content: " ▾"; }
 
 .upload-button,
 .method-selector summary,
 .graph-selector summary,
+.heatmap-color-selector summary,
 .graph-options button,
 .compare-button {
     border: 1px solid var(--border-accent);
@@ -210,10 +214,12 @@ body {
 }
 
 .graph-selector summary,
+.heatmap-color-selector summary,
 .graph-options button { padding: 6px 10px; font-size: 0.9em; }
 
 .graph-options,
-.method-options {
+.method-options,
+.heatmap-color-options {
     position: absolute;
     z-index: 3;
     overflow-y: auto;
@@ -232,15 +238,38 @@ body {
     box-shadow: 0 4px 12px #0008;
 }
 
+.heatmap-color-options {
+    top: calc(100% + 5px);
+    right: 0;
+    z-index: 4;
+    min-width: 160px;
+    max-height: 240px;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface-raised);
+    box-shadow: 0 4px 12px #0008;
+}
+
 .graph-options button,
-.method-options button {
+.method-options button,
+.heatmap-color-options button {
     display: block;
     width: 100%;
     border: 0;
     background: none;
     text-align: left;
 }
-.graph-options button { color: #e1eeee; cursor: pointer; }
+.graph-options button,
+.heatmap-color-options button { color: #e1eeee; cursor: pointer; }
+.heatmap-color-options button {
+    padding: 8px 10px;
+    background-image: linear-gradient(90deg, var(--colormap-preview));
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 56px 10px;
+}
+.heatmap-color-options button[aria-pressed="true"] { font-weight: 700; }
 
 .method-options {
     bottom: calc(100% + 8px);
@@ -256,8 +285,10 @@ body {
 .upload-button:hover,
 .method-selector summary:hover,
 .graph-selector summary:hover,
+.heatmap-color-selector summary:hover,
 .method-options button:hover,
 .graph-options button:hover,
+.heatmap-color-options button:hover,
 .compare-button:hover:not(:disabled),
 .color-apply-button:hover,
 .delete-set-button:hover { filter: brightness(1.25); }
@@ -294,6 +325,25 @@ body {
 }
 
 .heatmap-reset-view:hover { filter: brightness(1.25); }
+
+.heatmap-color-selector {
+    position: absolute;
+    top: 8px;
+    right: 70px;
+    z-index: 5;
+}
+
+.heatmap-color-selector summary {
+    padding: 4px 8px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: #e1eeee;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8em;
+    transition: filter 180ms ease;
+}
 
 .dataset-map-lines-toggle {
     position: absolute;
@@ -539,7 +589,7 @@ body {
     height: 10px;
     border: 1px solid #ffffff55;
     border-radius: 5px;
-    background: linear-gradient(90deg, #4575b4, #d73027);
+    background: linear-gradient(90deg, #fff5eb, #7f2704);
 }
 
 .compare-button { align-self: center; margin-top: 12px; padding: 7px 14px; }
