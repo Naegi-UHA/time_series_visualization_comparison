@@ -176,19 +176,24 @@ body {
 .graph-header h2 { margin: 0; color: var(--accent); font-size: clamp(14px, 1.4vw, 19px); }
 .graph-control { position: relative; flex: 0 0 auto; text-align: right; }
 .graph-selector,
-.method-selector { position: relative; }
+.method-selector,
+.visualization-selector { position: relative; }
 
 .graph-selector summary,
 .method-selector summary,
+.visualization-selector summary,
 .heatmap-color-selector summary { list-style: none; }
 .graph-selector summary::-webkit-details-marker,
 .method-selector summary::-webkit-details-marker,
+.visualization-selector summary::-webkit-details-marker,
 .heatmap-color-selector summary::-webkit-details-marker { display: none; }
 .graph-selector summary::after { content: " ▾"; }
+.visualization-selector summary::after { content: " ▾"; }
 .heatmap-color-selector summary::after { content: " ▾"; }
 
 .upload-button,
 .method-selector summary,
+.visualization-selector summary,
 .graph-selector summary,
 .heatmap-color-selector summary,
 .graph-options button,
@@ -214,11 +219,13 @@ body {
 }
 
 .graph-selector summary,
+.visualization-selector summary,
 .heatmap-color-selector summary,
 .graph-options button { padding: 6px 10px; font-size: 0.9em; }
 
 .graph-options,
 .method-options,
+.visualization-options,
 .heatmap-color-options {
     position: absolute;
     z-index: 3;
@@ -253,6 +260,7 @@ body {
 
 .graph-options button,
 .method-options button,
+.visualization-options button,
 .heatmap-color-options button {
     display: block;
     width: 100%;
@@ -261,6 +269,7 @@ body {
     text-align: left;
 }
 .graph-options button,
+.visualization-options button,
 .heatmap-color-options button { color: #e1eeee; cursor: pointer; }
 .heatmap-color-options button {
     padding: 8px 10px;
@@ -280,14 +289,31 @@ body {
     overscroll-behavior: contain;
 }
 .method-options button { padding: 8px 10px; color: #ddd; cursor: pointer; line-height: 1.2; }
+.visualization-options {
+    top: calc(100% + 5px);
+    bottom: auto;
+    left: 0;
+    z-index: 8;
+    width: max(100%, 180px);
+    max-height: min(220px, 40vh);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface-raised);
+    box-shadow: 0 4px 12px #0008;
+    overscroll-behavior: contain;
+}
+.visualization-options button { padding: 8px 10px; cursor: pointer; line-height: 1.2; }
+.visualization-options button[aria-pressed="true"] { font-weight: 700; }
 .method-selector[open] { z-index: 2; }
 
 .upload-button:hover,
 .method-selector summary:hover,
+.visualization-selector summary:hover,
 .graph-selector summary:hover,
 .heatmap-color-selector summary:hover,
 .method-options button:hover,
 .graph-options button:hover,
+.visualization-options button:hover,
 .heatmap-color-options button:hover,
 .compare-button:hover:not(:disabled),
 .color-apply-button:hover,
@@ -308,6 +334,80 @@ body {
         linear-gradient(90deg, #ffffff0c 1px, transparent 1px);
     background-size: 32px 32px;
 }
+
+.time-series-visualization {
+    position: absolute;
+    z-index: 8;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 3px;
+    background: #1c2929;
+    color: #e1eeee;
+}
+.time-series-visualization[hidden] { display: none; }
+.time-series-visualization-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+.time-series-visualization-header h3 {
+    margin: 4px 0 0;
+    color: var(--accent);
+    font-size: clamp(13px, 1.2vw, 17px);
+    overflow-wrap: anywhere;
+}
+.time-series-visualization-controls {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.visualization-selector summary {
+    padding: 6px 10px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: #e1eeee;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85em;
+    transition: filter 180ms ease;
+}
+.visualization-selector.is-disabled { opacity: 0.55; }
+.visualization-selector.is-disabled summary { pointer-events: none; }
+.time-series-visualization-controls .compare-button {
+    align-self: auto;
+    margin-top: 0;
+    padding: 6px 10px;
+    font-size: 0.85em;
+}
+.time-series-chart {
+    display: block;
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+}
+.time-series-grid-line { stroke: #ffffff22; stroke-width: 1; }
+.time-series-axis { stroke: #aebdbb; stroke-width: 1.5; }
+.time-series-tick-label,
+.time-series-axis-label {
+    fill: #aebdbb;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 14px;
+}
+.time-series-axis-label { fill: #e1eeee; }
+.time-series-line {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 3;
+    vector-effect: non-scaling-stroke;
+}
+.time-series-point { fill: var(--accent); stroke: #e1eeee; stroke-width: 2; }
 
 .heatmap-reset-view {
     position: absolute;
@@ -483,6 +583,19 @@ body {
     font-weight: 600;
     text-align: right;
 }
+.dataset-info-visualize {
+    margin-top: 10px;
+    padding: 5px 8px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: #e1eeee;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.78em;
+    pointer-events: auto;
+}
+.dataset-info-visualize:hover { filter: brightness(1.2); }
 
 .map-point-label,
 .map-distance-label {
@@ -821,6 +934,9 @@ body {
         padding: 12px;
     }
     .panel { min-height: 30vh; }
+    .time-series-visualization { padding: 10px; }
+    .time-series-visualization-header { flex-direction: column; }
+    .time-series-visualization-controls { justify-content: flex-start; }
     .site-description { gap: 1em; padding: 0; }
     .site-footer { align-items: flex-start; flex-direction: column; gap: 12px; padding: 14px; }
 }

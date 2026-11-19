@@ -142,6 +142,10 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertContains(response, "Toggle all")
         self.assertContains(response, 'id="heatmap-color-selector"')
         self.assertContains(response, 'data-colormap="Oranges" aria-pressed="true"')
+        self.assertContains(response, 'id="time-series-visualization"')
+        self.assertContains(response, "Quit visualization")
+        self.assertContains(response, 'id="time-series-chart"')
+        self.assertContains(response, "graph/time_series_visualization.js")
 
     def test_export_page_renders_format_picker(self):
         response = self.client.get(reverse("export-page"))
