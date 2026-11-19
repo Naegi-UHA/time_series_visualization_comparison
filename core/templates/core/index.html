@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261110-dataset-list-scroll">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261119-color-gradient">
 </head>
 <body>
     <header class="site-header">
@@ -80,6 +80,21 @@
             </div>
 
             <div class="graph-preview" id="graph-preview" data-current-graph="dataset-map">
+                <details id="heatmap-color-selector" class="heatmap-color-selector" hidden>
+                    <summary>Color gradient</summary>
+                    <div class="heatmap-color-options">
+                        <button type="button" data-colormap="Oranges" aria-pressed="true">Oranges</button>
+                        <button type="button" data-colormap="Blues" aria-pressed="false">Blues</button>
+                        <button type="button" data-colormap="Greens" aria-pressed="false">Greens</button>
+                        <button type="button" data-colormap="Purples" aria-pressed="false">Purples</button>
+                        <button type="button" data-colormap="Reds" aria-pressed="false">Reds</button>
+                        <button type="button" data-colormap="viridis" aria-pressed="false">Viridis</button>
+                        <button type="button" data-colormap="plasma" aria-pressed="false">Plasma</button>
+                        <button type="button" data-colormap="inferno" aria-pressed="false">Inferno</button>
+                        <button type="button" data-colormap="magma" aria-pressed="false">Magma</button>
+                        <button type="button" data-colormap="cividis" aria-pressed="false">Cividis</button>
+                    </div>
+                </details>
                 <button
                     id="heatmap-reset-view"
                     class="heatmap-reset-view"
@@ -174,7 +189,7 @@
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
     <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261110-series-length" defer></script>
-    <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261023-heatmap" defer></script>
+    <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261119-heatmap-text-contrast" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
     <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261110-intra-session-cache" defer></script>
     <script src="{% static 'core/js/exportation/index.js' %}?v=20261105-latex-report" defer></script>
