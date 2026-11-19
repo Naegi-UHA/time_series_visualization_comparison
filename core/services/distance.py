@@ -77,13 +77,16 @@ def mean_pairwise_distance(
         first_array = _as_series_array(first_series)
         for second_series in second_dataset:
             second_array = _as_series_array(second_series)
-            if first_array.shape[0] != second_array.shape[0]:
-                raise ValueError(
-                    "Time series must have the same number of dimensions to compare."
-                )
-            distance = float(distance_function(first_array, second_array))
-            if not np.isfinite(distance):
-                raise ValueError("The selected distance method returned a non-finite value.")
-            distances.append(distance)
+            for first_dimension in range(first_array.shape[0]):
+                for second_dimension in range(second_array.shape[0]):
+                    distance = float(distance_function(
+                        first_array[first_dimension:first_dimension + 1],
+                        second_array[second_dimension:second_dimension + 1],
+                    ))
+                    if not np.isfinite(distance):
+                        raise ValueError(
+                            "The selected distance method returned a non-finite value."
+                        )
+                    distances.append(distance)
 
     return float(np.mean(distances))

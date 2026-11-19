@@ -24,22 +24,23 @@ class DatasetDistanceTests(SimpleTestCase):
         with self.assertRaises(ValueError):
             mean_pairwise_distance([[]], [[1.0]], "dtw")
 
-    def test_distance_supports_multivariate_time_series(self):
+    def test_distance_averages_all_crossed_dimension_pairs(self):
         distance = mean_pairwise_distance(
             [[[0.0, 1.0, 2.0], [1.0, 2.0, 3.0]]],
             [[[0.0, 2.0, 3.0], [1.0, 3.0, 4.0]]],
             "dtw",
         )
 
-        self.assertEqual(distance, 4.0)
+        self.assertEqual(distance, 2.75)
 
-    def test_distance_rejects_different_dimension_counts(self):
-        with self.assertRaisesMessage(ValueError, "same number of dimensions"):
-            mean_pairwise_distance(
-                [[[0.0, 1.0]]],
-                [[[0.0, 1.0], [1.0, 2.0]]],
-                "dtw",
-            )
+    def test_distance_supports_different_dimension_counts(self):
+        distance = mean_pairwise_distance(
+            [[[0.0, 0.0], [10.0, 10.0]]],
+            [[[0.0, 0.0]]],
+            "dtw",
+        )
+
+        self.assertEqual(distance, 100.0)
 
     def test_imports_multivariate_ts_as_one_dataset(self):
         content = b"""@problemName SmallMultivariate

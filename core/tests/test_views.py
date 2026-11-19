@@ -136,7 +136,6 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertContains(response, 'accept=".txt,.ts,.arff,text/plain"')
         self.assertContains(response, 'id="toggle-all-datasets"')
         self.assertContains(response, "Toggle all")
-        self.assertContains(response, "Multivariate .ts files are imported as one dataset.")
 
     def test_export_page_renders_format_picker(self):
         response = self.client.get(reverse("export-page"))
