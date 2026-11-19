@@ -7,9 +7,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
-from matplotlib.colors import LinearSegmentedColormap
 
-from .export import validate_comparison_export
+from .export import contrasting_text_color, validate_comparison_export
 
 
 def comparison_graph_pdf(payload):
@@ -88,10 +87,7 @@ def comparison_graph_pdf(payload):
             np.eye(len(datasets), dtype=bool),
             distance_matrix,
         )
-        heatmap_colors = LinearSegmentedColormap.from_list(
-            "dataset-distance",
-            ["#4575b4", "#d73027"],
-        )
+        heatmap_colors = matplotlib.colormaps[export_data["heatmap_colormap"]]
         heatmap_colors.set_bad("#465553")
         minimum = min(distance_values)
         maximum = max(distance_values)
@@ -116,13 +112,18 @@ def comparison_graph_pdf(payload):
         axis.tick_params(axis="both", labelsize=11)
         for row in range(len(names)):
             for column in range(len(names)):
+                background_color = (
+                    heatmap_colors.get_bad()[:3]
+                    if row == column
+                    else image.cmap(image.norm(distance_matrix[row, column]))[:3]
+                )
                 axis.text(
                     column,
                     row,
                     f"{distance_matrix[row, column]:.3f}",
                     ha="center",
                     va="center",
-                    color="white" if row == column else "black",
+                    color=contrasting_text_color(background_color),
                     fontsize=11,
                 )
         figure.colorbar(image, ax=axis, label="Distance").ax.tick_params(labelsize=11)

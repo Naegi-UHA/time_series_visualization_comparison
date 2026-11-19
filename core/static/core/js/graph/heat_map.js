@@ -149,6 +149,9 @@
 
     window.graphRenderers = window.graphRenderers || {};
     window.graphRenderers["heat-map"] = {
+        getColorMap() {
+            return activeColorMap;
+        },
         render(result) {
             const datasetCount = result.datasets.length;
             const matrix = Array.from(

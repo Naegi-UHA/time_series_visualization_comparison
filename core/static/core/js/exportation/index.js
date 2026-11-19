@@ -32,8 +32,15 @@
             return;
         }
 
+        const heatmapRenderer = window.graphRenderers && window.graphRenderers["heat-map"];
+        if (!heatmapRenderer || typeof heatmapRenderer.getColorMap !== "function") {
+            comparisonStatus.textContent = "The selected heatmap color gradient is unavailable.";
+            return;
+        }
+
         const result = {
             ...latestResult,
+            heatmap_colormap: heatmapRenderer.getColorMap(),
             datasets: latestResult.datasets.map((dataset, index) => ({
                 ...dataset,
                 name: latestSelectedSets[index].value,

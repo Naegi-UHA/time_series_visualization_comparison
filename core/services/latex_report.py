@@ -3,7 +3,9 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from .export import validate_comparison_export
+from matplotlib import colormaps
+
+from .export import contrasting_text_color, validate_comparison_export
 
 
 class LatexCompilationError(Exception):
@@ -45,14 +47,9 @@ def _normalized_coordinates(datasets):
     ]
 
 
-def _distance_color(distance, minimum, maximum):
+def _distance_rgb(distance, minimum, maximum, colormap):
     ratio = 0.5 if minimum == maximum else (distance - minimum) / (maximum - minimum)
-    low = (69, 117, 180)
-    high = (215, 48, 39)
-    return "".join(
-        f"{round(low[index] + ratio * (high[index] - low[index])):02X}"
-        for index in range(3)
-    )
+    return colormaps[colormap](ratio)[:3]
 
 
 def _dataset_map(datasets, distances):
@@ -96,7 +93,7 @@ def _dataset_map(datasets, distances):
     return "\n".join(lines)
 
 
-def _heatmap(datasets, distances):
+def _heatmap(datasets, distances, colormap):
     count = len(datasets)
     matrix = [[0.0 for _ in range(count)] for _ in range(count)]
     values = []
@@ -126,7 +123,15 @@ def _heatmap(datasets, distances):
     for row in range(count):
         for column in range(count):
             distance = matrix[row][column]
-            color = "465553" if row == column else _distance_color(distance, minimum, maximum)
+            background_rgb = (
+                (70 / 255, 85 / 255, 83 / 255)
+                if row == column
+                else _distance_rgb(distance, minimum, maximum, colormap)
+            )
+            color = "465553" if row == column else "".join(
+                f"{round(channel * 255):02X}" for channel in background_rgb
+            )
+            text_color = contrasting_text_color(background_rgb)
             x = column
             y = count - row - 1
             color_name = f"heatcell{row}_{column}"
@@ -140,7 +145,7 @@ def _heatmap(datasets, distances):
                     f"\\draw[white] ({x},{y}) rectangle ({x + 1},{y + 1});"
                 ),
                 (
-                    f"\\node[text={'white' if row == column else 'black'}] "
+                    f"\\node[text={text_color}] "
                     f"at ({x + 0.5},{y + 0.5}) {{{distance:.3f}}};"
                 ),
             ])
@@ -156,6 +161,7 @@ def _latex_source(payload):
     datasets = export_data["datasets"]
     distances = export_data["distances"]
     method = _latex_text(export_data["method"].upper())
+    colormap = _latex_text(export_data["heatmap_colormap"])
 
     distance_rows = "\n".join(
         f"{_latex_text(pair['first'])} & {_latex_text(pair['second'])} "
@@ -194,12 +200,12 @@ The edge labels show the corresponding pairwise distances.
 \end{{figure}}
 
 \section{{Pairwise Distance Heatmap}}
-The heatmap shows the symmetric pairwise distance matrix. Blue indicates
-smaller distances and red indicates larger distances; the diagonal represents
-the zero self-distance.
+The heatmap shows the symmetric pairwise distance matrix. The
+\texttt{{{colormap}}} colormap represents smaller to larger distances; the
+diagonal represents the zero self-distance.
 \begin{{figure}}[H]
 \centering
-{_heatmap(datasets, distances)}
+{_heatmap(datasets, distances, export_data["heatmap_colormap"])}
 \caption{{Heatmap generated from the pairwise distances.}}
 \end{{figure}}
 
