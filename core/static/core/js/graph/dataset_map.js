@@ -69,6 +69,17 @@
         });
         card.append(list);
 
+        const visualizeButton = document.createElement("button");
+        visualizeButton.type = "button";
+        visualizeButton.className = "dataset-info-visualize";
+        visualizeButton.textContent = "Visualize time series";
+        visualizeButton.addEventListener("click", () => {
+            document.dispatchEvent(new CustomEvent("timeseriesvisualizationrequest", {
+                detail: { datasetId: source.datasetId },
+            }));
+        });
+        card.append(visualizeButton);
+
         point.setAttribute("aria-expanded", "true");
         mapResult.append(card);
         activeInfoPoint = point;
