@@ -56,6 +56,9 @@
         const margins = { top: 42, right: 32, bottom: 88, left: 86 };
         const plotWidth = width - margins.left - margins.right;
         const plotHeight = height - margins.top - margins.bottom;
+        const xForIndex = (index) => margins.left + (values.length === 1
+            ? plotWidth / 2
+            : index / (values.length - 1) * plotWidth);
         let minimum = values.reduce((current, value) => Math.min(current, value), Infinity);
         let maximum = values.reduce((current, value) => Math.max(current, value), -Infinity);
         if (minimum === maximum) {
@@ -63,8 +66,11 @@
             minimum -= padding;
             maximum += padding;
         }
+        const yForValue = (value) =>
+            margins.top + (maximum - value) / (maximum - minimum) * plotHeight;
 
         chart.replaceChildren();
+        document.dispatchEvent(new Event("timeserieshoverhide"));
         chart.setAttribute("viewBox", `0 0 ${width} ${height}`);
         chart.setAttribute(
             "aria-label",
@@ -114,9 +120,7 @@
             const stepIndex = stepTickCount === 1
                 ? 0
                 : Math.round(tick * (values.length - 1) / (stepTickCount - 1));
-            const x = margins.left + (values.length === 1
-                ? plotWidth / 2
-                : stepIndex / (values.length - 1) * plotWidth);
+            const x = xForIndex(stepIndex);
             const textAnchor = tick === 0 && tick === stepTickCount - 1
                 ? "middle"
                 : tick === 0
@@ -141,13 +145,12 @@
             );
         }
 
-        const points = values.map((value, index) => {
-            const x = margins.left + (values.length === 1
-                ? plotWidth / 2
-                : index / (values.length - 1) * plotWidth);
-            const y = margins.top + (maximum - value) / (maximum - minimum) * plotHeight;
-            return `${x},${y}`;
-        });
+        const pointCoordinates = values.map((value, index) => ({
+            x: xForIndex(index),
+            y: yForValue(value),
+        }));
+        const points = pointCoordinates.map(({ x, y }) => `${x},${y}`);
+
         chart.append(
             svgElement("polyline", {
                 points: points.join(" "),
@@ -168,11 +171,9 @@
             }, `Dimension ${dimensionIndex + 1} value`)
         );
         if (values.length === 1) {
-            const x = margins.left + plotWidth / 2;
-            const y = margins.top + (maximum - values[0]) / (maximum - minimum) * plotHeight;
             chart.append(svgElement("circle", {
-                cx: x,
-                cy: y,
+                cx: pointCoordinates[0].x,
+                cy: pointCoordinates[0].y,
                 r: 5,
                 class: "time-series-point",
             }));
@@ -181,11 +182,23 @@
         datasetTitle.title = activeDataset.name;
         seriesDimensionTitle.textContent =
             ` — Series ${seriesIndex + 1}, Dimension ${dimensionIndex + 1}`;
+        document.dispatchEvent(new CustomEvent("timeseriesplotrendered", {
+            detail: {
+                chart,
+                visualization,
+                values,
+                pointCoordinates,
+                plotLeft: margins.left,
+                plotWidth,
+                plotBottom: height - margins.bottom,
+            },
+        }));
     }
 
     function closeVisualization() {
         visualization.hidden = true;
         visualization.setAttribute("aria-hidden", "true");
+        document.dispatchEvent(new Event("timeserieshoverhide"));
         activeDataset = null;
         seriesSelector.open = false;
         dimensionSelector.open = false;

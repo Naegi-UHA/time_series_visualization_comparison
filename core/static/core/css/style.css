@@ -432,6 +432,42 @@ body {
     vector-effect: non-scaling-stroke;
 }
 .time-series-point { fill: var(--accent); stroke: #e1eeee; stroke-width: 2; }
+.time-series-point { pointer-events: none; }
+.time-series-hover-target {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 18;
+    pointer-events: stroke;
+    vector-effect: non-scaling-stroke;
+    cursor: crosshair;
+}
+.time-series-hover-target-point {
+    fill: transparent;
+    pointer-events: all;
+    cursor: crosshair;
+}
+.time-series-hover-guides { pointer-events: none; }
+.time-series-hover-guide {
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+    opacity: 0.9;
+    vector-effect: non-scaling-stroke;
+}
+.time-series-hover-marker {
+    fill: var(--accent);
+    stroke: #e1eeee;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+.dataset-info-card.time-series-hover-tooltip {
+    z-index: 10;
+    width: max-content;
+    min-width: 132px;
+    max-width: min(200px, calc(100% - 16px));
+    padding: 8px 10px;
+}
+.time-series-hover-tooltip dd { font-variant-numeric: tabular-nums; }
 
 .heatmap-reset-view {
     position: absolute;
