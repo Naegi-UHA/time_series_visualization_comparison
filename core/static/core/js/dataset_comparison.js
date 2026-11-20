@@ -1,5 +1,6 @@
 (function () {
     const compareButton = document.getElementById("compare-button");
+    const deleteCacheButton = document.getElementById("delete-cache-button");
     const datasetList = document.getElementById("dataset-list");
     const currentMethod = document.getElementById("current-method");
     const comparisonStatus = document.getElementById("comparison-status");
@@ -33,6 +34,13 @@
 
     document.addEventListener("graphchange", renderCurrentGraph);
     document.addEventListener("datasetrename", renderCurrentGraph);
+    document.addEventListener("comparisoncacheclear", () => {
+        const deletedCount = comparisonCache.size;
+        comparisonCache.clear();
+        comparisonStatus.textContent = deletedCount === 0
+            ? "The comparison cache is already empty."
+            : `Deleted ${deletedCount} cached comparison${deletedCount === 1 ? "" : "s"}.`;
+    });
 
     compareButton.addEventListener("click", async () => {
         const selectedSets = [...datasetList.querySelectorAll("input[type=checkbox]:checked")];
@@ -46,6 +54,7 @@
             series: JSON.parse(checkbox.dataset.series),
         }));
         compareButton.disabled = true;
+        deleteCacheButton.disabled = true;
         compareButton.setAttribute("aria-busy", "true");
         comparisonStatus.textContent = "Calculating distance...";
 
@@ -84,6 +93,7 @@
             comparisonStatus.textContent = `Comparison failed: ${error.message}`;
         } finally {
             compareButton.disabled = false;
+            deleteCacheButton.disabled = false;
             compareButton.setAttribute("aria-busy", "false");
         }
     });

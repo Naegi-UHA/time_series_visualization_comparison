@@ -146,6 +146,9 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertContains(response, "Quit visualization")
         self.assertContains(response, 'id="time-series-chart"')
         self.assertContains(response, "graph/time_series_visualization.js")
+        self.assertContains(response, 'id="delete-cache-button"')
+        self.assertContains(response, "Delete cache")
+        self.assertContains(response, "delete_cache.js")
 
     def test_export_page_renders_format_picker(self):
         response = self.client.get(reverse("export-page"))

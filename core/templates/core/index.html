@@ -151,6 +151,9 @@
                 </section>
             </div>
             <div class="graph-actions">
+                <button id="delete-cache-button" class="compare-button" type="button">
+                    Delete cache
+                </button>
                 <button
                     id="compare-button"
                     class="compare-button"
@@ -214,7 +217,8 @@
     <script src="{% static 'core/js/graph/time_series_visualization.js' %}?v=20261120-step-ticks" defer></script>
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261119-export-colormap" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
-    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261110-intra-session-cache" defer></script>
+    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261120-delete-cache" defer></script>
+    <script src="{% static 'core/js/delete_cache.js' %}?v=20261120-delete-cache" defer></script>
     <script src="{% static 'core/js/exportation/index.js' %}?v=20261119-export-colormap" defer></script>
 </body>
 </html>
