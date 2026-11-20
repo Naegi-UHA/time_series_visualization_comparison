@@ -305,6 +305,7 @@ body {
 .visualization-options button { padding: 8px 10px; cursor: pointer; line-height: 1.2; }
 .visualization-options button[aria-pressed="true"] { font-weight: 700; }
 .method-selector[open] { z-index: 2; }
+.graph-selector[open] { z-index: 12; }
 
 .upload-button:hover,
 .method-selector summary:hover,
@@ -490,7 +491,7 @@ body {
     position: absolute;
     top: 8px;
     right: 70px;
-    z-index: 5;
+    z-index: 10;
 }
 
 .heatmap-color-selector summary {
