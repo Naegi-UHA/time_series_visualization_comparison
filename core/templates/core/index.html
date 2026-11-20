@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261120-opaque-visualization">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261120-step-ticks">
 </head>
 <body>
     <header class="site-header">
@@ -129,7 +129,10 @@
                 </div>
                 <section id="time-series-visualization" class="time-series-visualization" hidden>
                     <div class="time-series-visualization-header">
-                        <h3 id="time-series-visualization-title"></h3>
+                        <h3 id="time-series-visualization-title">
+                            <span id="time-series-visualization-dataset-name"></span>
+                            <span id="time-series-visualization-series-dimension"></span>
+                        </h3>
                         <div class="time-series-visualization-controls">
                             <details id="time-series-selector-control" class="visualization-selector">
                                 <summary id="time-series-selector-summary">Select time series</summary>
@@ -208,7 +211,7 @@
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
     <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261119-timeseries-view" defer></script>
-    <script src="{% static 'core/js/graph/time_series_visualization.js' %}?v=20261119-series-view" defer></script>
+    <script src="{% static 'core/js/graph/time_series_visualization.js' %}?v=20261120-step-ticks" defer></script>
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261119-export-colormap" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
     <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261110-intra-session-cache" defer></script>

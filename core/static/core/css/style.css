@@ -350,24 +350,39 @@ body {
 .time-series-visualization[hidden] { display: none; }
 .time-series-visualization-header {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
 }
 .time-series-visualization-header h3 {
-    margin: 4px 0 0;
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+    margin: 0;
     color: var(--accent);
     font-size: clamp(13px, 1.2vw, 17px);
-    overflow-wrap: anywhere;
+    white-space: nowrap;
+}
+.time-series-visualization-dataset-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.time-series-visualization-series-dimension {
+    flex: 0 0 auto;
+    white-space: nowrap;
 }
 .time-series-visualization-controls {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 180px));
     gap: 8px;
-    flex-wrap: wrap;
+}
+.visualization-selector {
+    min-width: 0;
 }
 .visualization-selector summary {
+    box-sizing: border-box;
+    width: 100%;
     padding: 6px 10px;
     border: 1px solid var(--border-accent);
     border-radius: 4px;
@@ -376,15 +391,23 @@ body {
     cursor: pointer;
     font: inherit;
     font-size: 0.85em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     transition: filter 180ms ease;
 }
 .visualization-selector.is-disabled { opacity: 0.55; }
 .visualization-selector.is-disabled summary { pointer-events: none; }
 .time-series-visualization-controls .compare-button {
-    align-self: auto;
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 9;
+    width: 116px;
     margin-top: 0;
-    padding: 6px 10px;
-    font-size: 0.85em;
+    padding: 3px 6px;
+    font-size: 0.75em;
+    white-space: nowrap;
 }
 .time-series-chart {
     display: block;
@@ -398,8 +421,9 @@ body {
 .time-series-axis-label {
     fill: #aebdbb;
     font-family: "Segoe UI", sans-serif;
-    font-size: 14px;
 }
+.time-series-tick-label { font-size: 20px; }
+.time-series-axis-label { font-size: 24px; }
 .time-series-axis-label { fill: #e1eeee; }
 .time-series-line {
     fill: none;
@@ -935,8 +959,12 @@ body {
     }
     .panel { min-height: 30vh; }
     .time-series-visualization { padding: 10px; }
-    .time-series-visualization-header { flex-direction: column; }
-    .time-series-visualization-controls { justify-content: flex-start; }
+    .time-series-visualization-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .time-series-visualization-controls .compare-button {
+        right: 6px;
+        bottom: 6px;
+        width: 112px;
+    }
     .site-description { gap: 1em; padding: 0; }
     .site-footer { align-items: flex-start; flex-direction: column; gap: 12px; padding: 14px; }
 }

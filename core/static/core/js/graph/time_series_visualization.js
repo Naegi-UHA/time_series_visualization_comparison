@@ -2,7 +2,8 @@
     const datasetList = document.getElementById("dataset-list");
     const visualization = document.getElementById("time-series-visualization");
     const comparisonStatus = document.getElementById("comparison-status");
-    const title = document.getElementById("time-series-visualization-title");
+    const datasetTitle = document.getElementById("time-series-visualization-dataset-name");
+    const seriesDimensionTitle = document.getElementById("time-series-visualization-series-dimension");
     const seriesSelector = document.getElementById("time-series-selector-control");
     const dimensionSelector = document.getElementById("dimension-selector-control");
     const seriesSummary = document.getElementById("time-series-selector-summary");
@@ -52,7 +53,7 @@
         const values = dimensions[dimensionIndex];
         const width = 900;
         const height = 560;
-        const margins = { top: 42, right: 32, bottom: 64, left: 86 };
+        const margins = { top: 42, right: 32, bottom: 88, left: 86 };
         const plotWidth = width - margins.left - margins.right;
         const plotHeight = height - margins.top - margins.bottom;
         let minimum = values.reduce((current, value) => Math.min(current, value), Infinity);
@@ -108,6 +109,38 @@
             })
         );
 
+        const stepTickCount = Math.min(10, values.length);
+        for (let tick = 0; tick < stepTickCount; tick += 1) {
+            const stepIndex = stepTickCount === 1
+                ? 0
+                : Math.round(tick * (values.length - 1) / (stepTickCount - 1));
+            const x = margins.left + (values.length === 1
+                ? plotWidth / 2
+                : stepIndex / (values.length - 1) * plotWidth);
+            const textAnchor = tick === 0 && tick === stepTickCount - 1
+                ? "middle"
+                : tick === 0
+                    ? "start"
+                    : tick === stepTickCount - 1
+                        ? "end"
+                        : "middle";
+            chart.append(
+                svgElement("line", {
+                    x1: x,
+                    y1: height - margins.bottom,
+                    x2: x,
+                    y2: height - margins.bottom + 8,
+                    class: "time-series-axis",
+                }),
+                svgElement("text", {
+                    x,
+                    y: height - margins.bottom + 28,
+                    class: "time-series-tick-label",
+                    "text-anchor": textAnchor,
+                }, String(stepIndex + 1))
+            );
+        }
+
         const points = values.map((value, index) => {
             const x = margins.left + (values.length === 1
                 ? plotWidth / 2
@@ -122,7 +155,7 @@
             }),
             svgElement("text", {
                 x: margins.left + plotWidth / 2,
-                y: height - 18,
+                y: height - 12,
                 class: "time-series-axis-label",
                 "text-anchor": "middle",
             }, "Time step"),
@@ -144,7 +177,10 @@
                 class: "time-series-point",
             }));
         }
-        title.textContent = `${activeDataset.name} — Series ${seriesIndex + 1}, Dimension ${dimensionIndex + 1}`;
+        datasetTitle.textContent = activeDataset.name;
+        datasetTitle.title = activeDataset.name;
+        seriesDimensionTitle.textContent =
+            ` — Series ${seriesIndex + 1}, Dimension ${dimensionIndex + 1}`;
     }
 
     function closeVisualization() {
