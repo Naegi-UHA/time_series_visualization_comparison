@@ -78,7 +78,16 @@
                 detail: { datasetId: source.datasetId },
             }));
         });
-        card.append(visualizeButton);
+        const closeButton = document.createElement("button");
+        closeButton.type = "button";
+        closeButton.className = "dataset-info-close";
+        closeButton.textContent = "Close";
+        closeButton.setAttribute("aria-label", `Close information for ${name}`);
+        closeButton.addEventListener("click", hideDatasetInfo);
+        const actions = document.createElement("div");
+        actions.className = "dataset-info-actions";
+        actions.append(visualizeButton, closeButton);
+        card.append(actions);
 
         point.setAttribute("aria-expanded", "true");
         mapResult.append(card);

@@ -153,6 +153,8 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertContains(response, 'id="delete-cache-button"')
         self.assertContains(response, "Delete cache")
         self.assertContains(response, "delete_cache.js")
+        self.assertContains(response, 'id="theme-toggle"')
+        self.assertContains(response, "theme_toggle.js")
 
     def test_export_page_renders_format_picker(self):
         response = self.client.get(reverse("export-page"))

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261120-graph-menu-priority">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261126-method-menu-contrast">
 </head>
 <body>
     <header class="site-header">
@@ -18,6 +18,14 @@
             </a>
             <p>Students: RUNSER Lucas and BERNARDI Nicolas</p>
             <p>Professor: Ali El Hadi ISMAIL FAWAZ</p>
+            <button
+                id="theme-toggle"
+                class="theme-toggle"
+                type="button"
+                aria-label="Switch to light mode"
+                title="Switch to light mode"
+                aria-pressed="false"
+            >☀</button>
         </div>
     </header>
     <div class="dashboard">
@@ -223,11 +231,12 @@
     </footer>
 
     <form id="csrf-token-form" hidden>{% csrf_token %}</form>
-    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261110-series-length" defer></script>
-    <script src="{% static 'core/js/modify_dataset_name.js' %}?v=20261023-modify-name" defer></script>
+    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261126-edit-button" defer></script>
+    <script src="{% static 'core/js/modify_dataset_name.js' %}?v=20261126-edit-button" defer></script>
+    <script src="{% static 'core/js/theme_toggle.js' %}?v=20261126-light-mode" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
-    <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261119-timeseries-view" defer></script>
+    <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261126-info-close" defer></script>
     <script src="{% static 'core/js/graph/time_series_visualization.js' %}?v=20261120-hover-module" defer></script>
     <script src="{% static 'core/js/graph/time_series_hover.js' %}?v=20261120-hover-module" defer></script>
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261119-export-colormap" defer></script>

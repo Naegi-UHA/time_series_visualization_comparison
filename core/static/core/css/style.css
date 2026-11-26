@@ -1,8 +1,25 @@
 :root {
+    --body-bg: #111;
     --page-bg: #1e1e1e;
     --surface: #252526;
     --surface-raised: #303030;
     --control-bg: #303b3b;
+    --button-text: #e1eeee;
+    --heading: #f0f2f2;
+    --project-text: #bfc5c5;
+    --link: #9ad9d3;
+    --accent-text: #7fc7c1;
+    --graph-bg: #202b2b;
+    --graph-grid: #ffffff0c;
+    --graph-grid-line: #ffffff22;
+    --graph-axis: #8c9a98;
+    --graph-line: #7fc7c1;
+    --graph-label: #e1eeee;
+    --graph-card-bg: #202b2b;
+    --graph-distance-bg: #202b2bdb;
+    --graph-outline: #e1eeee;
+    --graph-focus: #fff;
+    --graph-heading: #7fc7c1;
     --border: #555;
     --border-accent: #638f8c;
     --text: #d4d4d4;
@@ -20,7 +37,7 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 2% 0;
-    background: #111;
+    background: var(--body-bg);
     color: var(--text);
     font-family: "Segoe UI", sans-serif;
 }
@@ -37,7 +54,7 @@ body {
 .site-header h1 {
     flex: 0 1 auto;
     margin: 0;
-    color: #f0f2f2;
+    color: var(--heading);
     font-size: clamp(20px, 2vw, 28px);
 }
 
@@ -47,11 +64,25 @@ body {
     align-items: center;
     justify-content: flex-end;
     gap: 6px 16px;
-    color: #bfc5c5;
+    color: var(--project-text);
     font-size: 0.9rem;
 }
 
 .project-info p { margin: 0; }
+.theme-toggle {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--border-accent);
+    border-radius: 50%;
+    background: var(--control-bg);
+    color: var(--button-text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+.theme-toggle:hover { filter: brightness(1.12); }
 
 .dashboard {
     display: grid;
@@ -95,7 +126,7 @@ body {
 
 .site-footer a,
 .project-info a {
-    color: #9ad9d3;
+    color: var(--link);
     font-weight: 600;
     text-decoration: none;
 }
@@ -134,7 +165,7 @@ body {
 }
 .center-panel { padding: 3%; }
 .right-panel { display: flex; flex-direction: column; padding: 3%; }
-.right-panel h2 { margin: 0 0 12px; color: var(--accent); font-size: clamp(14px, 1.4vw, 19px); }
+.right-panel h2 { margin: 0 0 12px; color: var(--accent-text); font-size: clamp(14px, 1.4vw, 19px); }
 
 .pairwise-graph {
     position: relative;
@@ -143,9 +174,9 @@ body {
     overflow: hidden;
     border: 1px solid var(--border-accent);
     border-radius: 4px;
-    background-color: #202b2b;
-    background-image: linear-gradient(#ffffff0c 1px, transparent 1px),
-        linear-gradient(90deg, #ffffff0c 1px, transparent 1px);
+    background-color: var(--graph-bg);
+    background-image: linear-gradient(var(--graph-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--graph-grid) 1px, transparent 1px);
     background-size: 32px 32px;
 }
 
@@ -173,7 +204,7 @@ body {
     justify-content: space-between;
     gap: 12px;
 }
-.graph-header h2 { margin: 0; color: var(--accent); font-size: clamp(14px, 1.4vw, 19px); }
+.graph-header h2 { margin: 0; color: var(--accent-text); font-size: clamp(14px, 1.4vw, 19px); }
 .graph-control { position: relative; flex: 0 0 auto; text-align: right; }
 .graph-selector,
 .method-selector,
@@ -201,7 +232,7 @@ body {
     border: 1px solid var(--border-accent);
     border-radius: 4px;
     background: var(--control-bg);
-    color: #e1eeee;
+    color: var(--button-text);
     cursor: pointer;
     font: inherit;
     text-align: center;
@@ -270,7 +301,7 @@ body {
 }
 .graph-options button,
 .visualization-options button,
-.heatmap-color-options button { color: #e1eeee; cursor: pointer; }
+.heatmap-color-options button { color: var(--button-text); cursor: pointer; }
 .heatmap-color-options button {
     padding: 8px 10px;
     background-image: linear-gradient(90deg, var(--colormap-preview));
@@ -330,9 +361,9 @@ body {
     overflow: hidden;
     border: 1px solid var(--border-accent);
     border-radius: 4px;
-    background-color: #202b2b;
-    background-image: linear-gradient(#ffffff0c 1px, transparent 1px),
-        linear-gradient(90deg, #ffffff0c 1px, transparent 1px);
+    background-color: var(--graph-bg);
+    background-image: linear-gradient(var(--graph-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--graph-grid) 1px, transparent 1px);
     background-size: 32px 32px;
 }
 
@@ -345,8 +376,8 @@ body {
     gap: 12px;
     padding: 16px;
     border-radius: 3px;
-    background: #1c2929;
-    color: #e1eeee;
+    background: var(--graph-bg);
+    color: var(--graph-label);
 }
 .time-series-visualization[hidden] { display: none; }
 .time-series-visualization-header {
@@ -360,7 +391,7 @@ body {
     align-items: baseline;
     min-width: 0;
     margin: 0;
-    color: var(--accent);
+    color: var(--graph-heading);
     font-size: clamp(13px, 1.2vw, 17px);
     white-space: nowrap;
 }
@@ -388,7 +419,7 @@ body {
     border: 1px solid var(--border-accent);
     border-radius: 4px;
     background: var(--control-bg);
-    color: #e1eeee;
+    color: var(--button-text);
     cursor: pointer;
     font: inherit;
     font-size: 0.85em;
@@ -416,23 +447,23 @@ body {
     width: 100%;
     min-height: 0;
 }
-.time-series-grid-line { stroke: #ffffff22; stroke-width: 1; }
-.time-series-axis { stroke: #aebdbb; stroke-width: 1.5; }
+.time-series-grid-line { stroke: var(--graph-grid-line); stroke-width: 1; }
+.time-series-axis { stroke: var(--graph-axis); stroke-width: 1.5; }
 .time-series-tick-label,
 .time-series-axis-label {
-    fill: #aebdbb;
+    fill: var(--muted);
     font-family: "Segoe UI", sans-serif;
 }
 .time-series-tick-label { font-size: 20px; }
 .time-series-axis-label { font-size: 24px; }
-.time-series-axis-label { fill: #e1eeee; }
+.time-series-axis-label { fill: var(--graph-label); }
 .time-series-line {
     fill: none;
-    stroke: var(--accent);
+    stroke: var(--graph-line);
     stroke-width: 3;
     vector-effect: non-scaling-stroke;
 }
-.time-series-point { fill: var(--accent); stroke: #e1eeee; stroke-width: 2; }
+.time-series-point { fill: var(--graph-line); stroke: var(--graph-outline); stroke-width: 2; }
 .time-series-point { pointer-events: none; }
 .time-series-hover-target {
     fill: none;
@@ -449,15 +480,15 @@ body {
 }
 .time-series-hover-guides { pointer-events: none; }
 .time-series-hover-guide {
-    stroke: var(--accent);
+    stroke: var(--graph-line);
     stroke-width: 1;
     stroke-dasharray: 4 4;
     opacity: 0.9;
     vector-effect: non-scaling-stroke;
 }
 .time-series-hover-marker {
-    fill: var(--accent);
-    stroke: #e1eeee;
+    fill: var(--graph-line);
+    stroke: var(--graph-outline);
     stroke-width: 2;
     vector-effect: non-scaling-stroke;
 }
@@ -479,7 +510,7 @@ body {
     border: 1px solid var(--border-accent);
     border-radius: 4px;
     background: var(--control-bg);
-    color: #e1eeee;
+    color: var(--button-text);
     cursor: pointer;
     font: inherit;
     font-size: 0.8em;
@@ -499,7 +530,7 @@ body {
     border: 1px solid var(--border-accent);
     border-radius: 4px;
     background: var(--control-bg);
-    color: #e1eeee;
+    color: var(--button-text);
     cursor: pointer;
     font: inherit;
     font-size: 0.8em;
@@ -515,7 +546,7 @@ body {
     border: 1px solid var(--border-accent);
     border-radius: 4px;
     background: var(--control-bg);
-    color: #e1eeee;
+    color: var(--button-text);
     cursor: pointer;
     font: inherit;
     font-size: 0.8em;
@@ -526,7 +557,7 @@ body {
 .graph-view { position: absolute; inset: 0; }
 
 .map-axes { position: absolute; inset: 0; pointer-events: none; }
-.map-axis { position: absolute; background: #8c9a98; }
+.map-axis { position: absolute; background: var(--graph-axis); }
 .map-axis-x { right: 10%; bottom: 14%; left: 12%; height: 1px; }
 .map-axis-y { top: 12%; bottom: 14%; left: 12%; width: 1px; }
 
@@ -584,7 +615,7 @@ body {
 }
 
 .map-distance-lines line {
-    stroke: var(--accent);
+    stroke: var(--graph-line);
     stroke-opacity: 0.8;
     stroke-width: 1.2;
     vector-effect: non-scaling-stroke;
@@ -599,7 +630,7 @@ body {
     width: 18px;
     height: 18px;
     padding: 0;
-    border: 2px solid #e1eeee;
+    border: 2px solid var(--graph-outline);
     border-radius: 50%;
     appearance: none;
     cursor: pointer;
@@ -608,7 +639,7 @@ body {
 .map-point-a { background: #526bff; }
 .map-point-b { background: #ff5a65; }
 .map-point:focus-visible {
-    outline: 2px solid #fff;
+    outline: 2px solid var(--graph-focus);
     outline-offset: 3px;
 }
 
@@ -619,12 +650,16 @@ body {
     padding: 12px 14px;
     border: 1px solid var(--border-accent);
     border-radius: 6px;
-    background: #202b2b;
+    background: var(--graph-card-bg);
     box-shadow: 0 5px 18px #0008;
-    color: #e1eeee;
+    color: var(--graph-label);
     pointer-events: none;
 }
-
+.dataset-info-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 .dataset-info-card h3 {
     margin: 0 0 8px;
     font-size: 0.95em;
@@ -645,18 +680,33 @@ body {
     text-align: right;
 }
 .dataset-info-visualize {
+    flex: 1 1 auto;
     margin-top: 10px;
     padding: 5px 8px;
     border: 1px solid var(--border-accent);
     border-radius: 4px;
     background: var(--control-bg);
-    color: #e1eeee;
+    color: var(--button-text);
     cursor: pointer;
     font: inherit;
     font-size: 0.78em;
     pointer-events: auto;
 }
 .dataset-info-visualize:hover { filter: brightness(1.2); }
+.dataset-info-close {
+    flex: 0 0 auto;
+    margin-top: 10px;
+    padding: 5px 8px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: var(--button-text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.78em;
+    pointer-events: auto;
+}
+.dataset-info-close:hover { filter: brightness(1.2); }
 
 .map-point-label,
 .map-distance-label {
@@ -669,7 +719,7 @@ body {
     bottom: calc(100% + 8px);
     width: max-content;
     max-width: 120px;
-    color: #e1eeee;
+    color: var(--graph-label);
     overflow-wrap: anywhere;
     transform: translateX(-50%);
 }
@@ -677,8 +727,8 @@ body {
     z-index: 1;
     padding: 1px 3px;
     border-radius: 2px;
-    background: #202b2bdb;
-    color: #e1eeee;
+    background: var(--graph-distance-bg);
+    color: var(--graph-label);
     font-size: clamp(8px, 0.7vw, 10px);
     line-height: 1.2;
     white-space: nowrap;
@@ -889,9 +939,27 @@ body {
     font: inherit;
     text-align: left;
     overflow-wrap: anywhere;
-    cursor: text;
+    cursor: default;
 }
-.dataset-name:hover { color: var(--accent); }
+.dataset-name-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+.dataset-name-edit:hover,
+.dataset-name-edit:focus-visible {
+    border-color: var(--border-accent);
+    color: var(--accent-text);
+}
+.dataset-name-edit svg { width: 14px; height: 14px; fill: currentColor; }
 .dataset-name-input {
     width: min(100%, 180px);
     min-width: 0;
@@ -959,7 +1027,7 @@ body {
     border: 1px solid var(--border-accent);
     border-radius: 3px;
     background: var(--control-bg);
-    color: #e1eeee;
+    color: var(--button-text);
     cursor: pointer;
     transition: filter 180ms ease;
 }
@@ -974,6 +1042,46 @@ body {
     line-height: 1;
     transition: filter 180ms ease;
 }
+
+body[data-theme="light"] {
+    --body-bg: #f1f4f5;
+    --page-bg: #e1e8ea;
+    --surface: #ffffff;
+    --surface-raised: #edf2f3;
+    --control-bg: #dce7e9;
+    --button-text: #26363a;
+    --heading: #1f2c30;
+    --project-text: #3e4d51;
+    --link: #276f69;
+    --accent-text: #28756f;
+    --graph-bg: #f8fcfd;
+    --graph-grid: #27a8bf20;
+    --graph-grid-line: #27899b35;
+    --graph-axis: #668f98;
+    --graph-line: #159bb8b3;
+    --graph-label: #29464c;
+    --graph-card-bg: #ffffff;
+    --graph-distance-bg: #f1fbfce8;
+    --graph-outline: #16869a;
+    --graph-focus: #087c92;
+    --graph-heading: #187b8f;
+    --border: #b3c1c4;
+    --border-accent: #628985;
+    --text: #26363a;
+    --muted: #596a6e;
+}
+body[data-theme="light"] .upload-button,
+body[data-theme="light"] .method-selector summary {
+    background: var(--control-bg);
+    color: var(--button-text);
+}
+body[data-theme="light"] .method-options {
+    background: var(--surface-raised);
+    color: var(--button-text);
+}
+body[data-theme="light"] .method-options button { color: var(--button-text); }
+body[data-theme="light"] #current-graph { color: var(--muted); }
+body[data-theme="light"] .dataset-name-edit { color: var(--muted); }
 
 .method-control { margin-top: auto; transform: translateY(-10px); }
 #current-method { margin: 8px 0 0; text-align: center; }
