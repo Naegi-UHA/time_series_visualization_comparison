@@ -14,6 +14,7 @@
     --graph-grid-line: #ffffff22;
     --graph-axis: #8c9a98;
     --graph-line: #7fc7c1;
+    --graph-line-normalized: #bb86fc;
     --graph-label: #e1eeee;
     --graph-card-bg: #202b2b;
     --graph-distance-bg: #202b2bdb;
@@ -406,7 +407,7 @@ body {
 }
 .time-series-visualization-controls {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 180px));
+    grid-template-columns: repeat(3, minmax(0, 180px));
     gap: 8px;
 }
 .visualization-selector {
@@ -441,6 +442,46 @@ body {
     font-size: 0.75em;
     white-space: nowrap;
 }
+.time-series-visualization-footer {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    z-index: 9;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100% - 140px);
+}
+.z-normalization-toggle {
+    flex: 0 0 auto;
+    padding: 3px 6px;
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: var(--button-text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.75em;
+    white-space: nowrap;
+}
+.z-normalization-toggle:hover { filter: brightness(1.2); }
+.z-normalization-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 4px;
+    font-size: 0.72em;
+    white-space: nowrap;
+    transform: translateY(2px);
+}
+.z-normalization-legend-standard {
+    color: var(--graph-line);
+    font-weight: 700;
+}
+.z-normalization-legend-normalized {
+    color: var(--graph-line-normalized);
+    font-weight: 700;
+}
 .time-series-chart {
     display: block;
     flex: 1;
@@ -463,7 +504,12 @@ body {
     stroke-width: 3;
     vector-effect: non-scaling-stroke;
 }
+.time-series-line-normalized {
+    stroke: var(--graph-line-normalized);
+    stroke-dasharray: 7 4;
+}
 .time-series-point { fill: var(--graph-line); stroke: var(--graph-outline); stroke-width: 2; }
+.time-series-point-normalized { fill: var(--graph-line-normalized); }
 .time-series-point { pointer-events: none; }
 .time-series-hover-target {
     fill: none;
@@ -1059,6 +1105,7 @@ body[data-theme="light"] {
     --graph-grid-line: #27899b35;
     --graph-axis: #668f98;
     --graph-line: #159bb8b3;
+    --graph-line-normalized: #8045a1;
     --graph-label: #29464c;
     --graph-card-bg: #ffffff;
     --graph-distance-bg: #f1fbfce8;

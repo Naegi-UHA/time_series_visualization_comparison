@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261126-method-menu-contrast">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261127-z-normalization-axis-spacing">
 </head>
 <body>
     <header class="site-header">
@@ -142,6 +142,10 @@
                             <span id="time-series-visualization-series-dimension"></span>
                         </h3>
                         <div class="time-series-visualization-controls">
+                            <details id="class-selector-control" class="visualization-selector">
+                                <summary id="class-selector-summary">Select class</summary>
+                                <div id="class-selector-options" class="visualization-options"></div>
+                            </details>
                             <details id="time-series-selector-control" class="visualization-selector">
                                 <summary id="time-series-selector-summary">Select time series</summary>
                                 <div id="time-series-selector-options" class="visualization-options"></div>
@@ -156,6 +160,18 @@
                         </div>
                     </div>
                     <svg id="time-series-chart" class="time-series-chart" role="img"></svg>
+                    <div class="time-series-visualization-footer">
+                        <button
+                            id="z-normalization-toggle"
+                            class="z-normalization-toggle"
+                            type="button"
+                            aria-pressed="true"
+                        >Visualize Z-normalization</button>
+                        <div class="z-normalization-legend" aria-label="Graph line legend">
+                            <span>standard : <span class="z-normalization-legend-standard">-</span></span>
+                            <span>; normalized : <span class="z-normalization-legend-normalized">-</span></span>
+                        </div>
+                    </div>
                     <div
                         id="time-series-hover-tooltip"
                         class="dataset-info-card time-series-hover-tooltip"
@@ -237,7 +253,8 @@
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
     <script src="{% static 'core/js/method_selection.js' %}" defer></script>
     <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261126-info-close" defer></script>
-    <script src="{% static 'core/js/graph/time_series_visualization.js' %}?v=20261120-hover-module" defer></script>
+    <script src="{% static 'core/js/z_normalization.js' %}?v=20261127-z-normalization" defer></script>
+    <script src="{% static 'core/js/graph/time_series_visualization.js' %}?v=20261127-z-normalization-axis-spacing-2" defer></script>
     <script src="{% static 'core/js/graph/time_series_hover.js' %}?v=20261120-hover-module" defer></script>
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261119-export-colormap" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
