@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261127-z-normalization-axis-spacing">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261127-method-config-2">
 </head>
 <body>
     <header class="site-header">
@@ -51,23 +51,75 @@
             <div class="dataset-list" id="dataset-list"></div>
 
             <div class="method-control">
-                <details class="method-selector">
-                    <summary>Select method</summary>
-
-                    <div class="method-options">
-                        <button type="button">DTW</button>
-                        <button type="button">DTW_GI</button>
-                        <button type="button">SHAPE_DTW</button>
-                        <button type="button">DDTW</button>
-                        <button type="button">WDTW</button>
-                        <button type="button">WDDTW</button>
-                        <button type="button">ADTW</button>
-                        <button type="button">SOFT_DTW</button>
-                        <button type="button">MSM</button>
-                        <button type="button">TWE</button>
-                    </div>
-                </details>
-                <p id="current-method" data-method="dtw">current method : DTW</p>
+                <button
+                    id="method-settings-trigger"
+                    class="method-settings-trigger"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="method-settings-panel"
+                >Select method</button>
+                <p id="current-method" data-method="dtw" data-strategy="eba">
+                    current method : EBA + DTW
+                </p>
+                <div
+                    id="method-settings-panel"
+                    class="method-settings-panel"
+                    role="dialog"
+                    aria-labelledby="method-settings-title"
+                    hidden
+                >
+                    <form id="method-settings-form">
+                        <div class="method-settings-header">
+                            <h3 id="method-settings-title">Comparison settings</h3>
+                            <button
+                                id="method-settings-close"
+                                class="method-settings-close"
+                                type="button"
+                                aria-label="Close settings"
+                            >×</button>
+                        </div>
+                        <label class="method-settings-select">
+                            Representative method
+                            <select id="representative-method">
+                                <option value="eba">Elastic Barycenter Averaging (EBA)</option>
+                                <option value="medoid">Medoid</option>
+                                <option value="subgradient">Subgradient barycenter</option>
+                                <option value="pairwise_mean">Pairwise mean (current)</option>
+                            </select>
+                        </label>
+                        <p id="representative-method-description" class="method-settings-help"></p>
+                        <label class="method-settings-select">
+                            Distance method
+                            <select id="distance-method">
+                                <option value="dtw">DTW</option>
+                                <option value="dtw_gi">DTW_GI</option>
+                                <option value="shape_dtw">SHAPE_DTW</option>
+                                <option value="ddtw">DDTW</option>
+                                <option value="wdtw">WDTW</option>
+                                <option value="wddtw">WDDTW</option>
+                                <option value="adtw">ADTW</option>
+                                <option value="soft_dtw">SOFT_DTW</option>
+                                <option value="msm">MSM</option>
+                                <option value="twe">TWE</option>
+                            </select>
+                        </label>
+                        <section class="method-settings-section">
+                            <h4>Distance parameters</h4>
+                            <div id="distance-parameters" class="method-settings-fields"></div>
+                            <p class="method-settings-help">
+                                Other metric parameters use Aeon's defaults. With EBA or Subgradient, slope applies to final comparisons only.
+                            </p>
+                        </section>
+                        <div class="method-settings-actions">
+                            <button id="method-settings-cancel" class="compare-button" type="button">
+                                Cancel
+                            </button>
+                            <button id="method-settings-apply" class="compare-button" type="submit">
+                                Apply settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -229,7 +281,7 @@
         <p>- Use the left panel to upload datasets and select the comparison method.</p>
         <p>- The middle panel displays the comparison results.</p>
         <p>- The right panel will show the steps involved in the calculation.</p>
-        <p>- The heatmap uses the selected method to calculate pairwise dataset distances, averaging the distances between their time series. Each distance is shown symmetrically in the matrix; blue indicates smaller distances and red indicates larger ones.</p>
+        <p>- Each dataset is represented using the selected strategy (for example, one barycenter or medoid per dimension), then the selected distance is averaged across all pairs of representatives. Pairwise mean instead compares the original series directly. The resulting distances fill a symmetric matrix; blue indicates smaller distances and red indicates larger ones.</p>
     </div>
 
     <footer class="site-footer">
@@ -251,15 +303,15 @@
     <script src="{% static 'core/js/modify_dataset_name.js' %}?v=20261126-edit-button" defer></script>
     <script src="{% static 'core/js/theme_toggle.js' %}?v=20261126-light-mode" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
-    <script src="{% static 'core/js/method_selection.js' %}" defer></script>
+    <script src="{% static 'core/js/method_selection.js' %}?v=20261127-method-config-4" defer></script>
     <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261126-info-close" defer></script>
     <script src="{% static 'core/js/z_normalization.js' %}?v=20261127-z-normalization" defer></script>
     <script src="{% static 'core/js/graph/time_series_visualization.js' %}?v=20261127-z-normalization-axis-spacing-2" defer></script>
     <script src="{% static 'core/js/graph/time_series_hover.js' %}?v=20261120-hover-module" defer></script>
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261119-export-colormap" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
-    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261120-delete-cache" defer></script>
+    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261127-method-config-4" defer></script>
     <script src="{% static 'core/js/delete_cache.js' %}?v=20261120-delete-cache" defer></script>
-    <script src="{% static 'core/js/exportation/index.js' %}?v=20261119-export-colormap" defer></script>
+    <script src="{% static 'core/js/exportation/index.js' %}?v=20261127-method-config" defer></script>
 </body>
 </html>

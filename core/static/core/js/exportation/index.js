@@ -40,6 +40,7 @@
 
         const result = {
             ...latestResult,
+            method: latestResult.method_label || latestResult.method,
             heatmap_colormap: heatmapRenderer.getColorMap(),
             datasets: latestResult.datasets.map((dataset, index) => ({
                 ...dataset,
