@@ -131,14 +131,19 @@ function addDataset(filename, data) {
     );
     checkbox.dataset.dimensionCount = String(data.dimensions);
 
-    const name = document.createElement("button");
-    name.type = "button";
+    const name = document.createElement("span");
     name.className = "dataset-name";
     name.textContent = filename;
-    name.setAttribute("aria-label", `Rename ${filename}`);
 
     const actions = document.createElement("div");
     actions.className = "dataset-actions";
+
+    const editNameButton = document.createElement("button");
+    editNameButton.type = "button";
+    editNameButton.className = "dataset-name-edit";
+    editNameButton.setAttribute("aria-label", `Rename ${filename}`);
+    editNameButton.title = `Rename ${filename}`;
+    editNameButton.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11.7 1.3a1 1 0 0 1 1.4 0l1.6 1.6a1 1 0 0 1 0 1.4l-8.8 8.8-3.5.8.8-3.5 8.5-9.1ZM2.2 14l2.2-.5L2.7 11 2.2 14Z"/></svg>';
 
     const colorButton = document.createElement("button");
     colorButton.type = "button";
@@ -180,7 +185,7 @@ function addDataset(filename, data) {
     deleteButton.textContent = "×";
 
     setLabel.append(checkbox, name);
-    actions.append(colorButton, deleteButton);
+    actions.append(editNameButton, colorButton, deleteButton);
     row.append(setLabel, actions, colorEditor);
     datasetList.append(row);
 }

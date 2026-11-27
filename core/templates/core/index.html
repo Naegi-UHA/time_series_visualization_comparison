@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261120-graph-menu-priority">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261127-site-description">
 </head>
 <body>
     <header class="site-header">
@@ -16,8 +16,24 @@
             <a href="https://github.com/Naegi-UHA/time_series_visualization_comparison" target="_blank" rel="noopener noreferrer">
                 Github repository
             </a>
-            <p>Students: RUNSER Lucas and BERNARDI Nicolas</p>
-            <p>Professor: Ali El Hadi ISMAIL FAWAZ</p>
+            <p>
+                Students :
+                <a href="https://github.com/Naegi-UHA" target="_blank" rel="noopener noreferrer">RUNSER Lucas</a>
+                and
+                <a href="https://github.com/LinkCheat" target="_blank" rel="noopener noreferrer">BERNARDI Nicolas</a>
+            </p>
+            <p>
+                Professor :
+                <a href="https://ai-fawaz.fr/" target="_blank" rel="noopener noreferrer">ISMAIL FAWAZ Ali El Hadi</a>
+            </p>
+            <button
+                id="theme-toggle"
+                class="theme-toggle"
+                type="button"
+                aria-label="Switch to light mode"
+                title="Switch to light mode"
+                aria-pressed="false"
+            >☀</button>
         </div>
     </header>
     <div class="dashboard">
@@ -43,23 +59,75 @@
             <div class="dataset-list" id="dataset-list"></div>
 
             <div class="method-control">
-                <details class="method-selector">
-                    <summary>Select method</summary>
-
-                    <div class="method-options">
-                        <button type="button">DTW</button>
-                        <button type="button">DTW_GI</button>
-                        <button type="button">SHAPE_DTW</button>
-                        <button type="button">DDTW</button>
-                        <button type="button">WDTW</button>
-                        <button type="button">WDDTW</button>
-                        <button type="button">ADTW</button>
-                        <button type="button">SOFT_DTW</button>
-                        <button type="button">MSM</button>
-                        <button type="button">TWE</button>
-                    </div>
-                </details>
-                <p id="current-method" data-method="dtw">current method : DTW</p>
+                <button
+                    id="method-settings-trigger"
+                    class="method-settings-trigger"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="method-settings-panel"
+                >Select method</button>
+                <p id="current-method" data-method="dtw" data-strategy="eba">
+                    current method : EBA + DTW
+                </p>
+                <div
+                    id="method-settings-panel"
+                    class="method-settings-panel"
+                    role="dialog"
+                    aria-labelledby="method-settings-title"
+                    hidden
+                >
+                    <form id="method-settings-form">
+                        <div class="method-settings-header">
+                            <h3 id="method-settings-title">Comparison settings</h3>
+                            <button
+                                id="method-settings-close"
+                                class="method-settings-close"
+                                type="button"
+                                aria-label="Close settings"
+                            >×</button>
+                        </div>
+                        <label class="method-settings-select">
+                            Representative method
+                            <select id="representative-method">
+                                <option value="eba">Elastic Barycenter Averaging (EBA)</option>
+                                <option value="medoid">Medoid</option>
+                                <option value="subgradient">Subgradient barycenter</option>
+                                <option value="pairwise_mean">Pairwise mean (current)</option>
+                            </select>
+                        </label>
+                        <p id="representative-method-description" class="method-settings-help"></p>
+                        <label class="method-settings-select">
+                            Distance method
+                            <select id="distance-method">
+                                <option value="dtw">DTW</option>
+                                <option value="dtw_gi">DTW_GI</option>
+                                <option value="shape_dtw">SHAPE_DTW</option>
+                                <option value="ddtw">DDTW</option>
+                                <option value="wdtw">WDTW</option>
+                                <option value="wddtw">WDDTW</option>
+                                <option value="adtw">ADTW</option>
+                                <option value="soft_dtw">SOFT_DTW</option>
+                                <option value="msm">MSM</option>
+                                <option value="twe">TWE</option>
+                            </select>
+                        </label>
+                        <section class="method-settings-section">
+                            <h4>Distance parameters</h4>
+                            <div id="distance-parameters" class="method-settings-fields"></div>
+                            <p class="method-settings-help">
+                                Other metric parameters use Aeon's defaults. With EBA or Subgradient, slope applies to final comparisons only.
+                            </p>
+                        </section>
+                        <div class="method-settings-actions">
+                            <button id="method-settings-cancel" class="compare-button" type="button">
+                                Cancel
+                            </button>
+                            <button id="method-settings-apply" class="compare-button" type="submit">
+                                Apply settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -134,6 +202,10 @@
                             <span id="time-series-visualization-series-dimension"></span>
                         </h3>
                         <div class="time-series-visualization-controls">
+                            <details id="class-selector-control" class="visualization-selector">
+                                <summary id="class-selector-summary">Select class</summary>
+                                <div id="class-selector-options" class="visualization-options"></div>
+                            </details>
                             <details id="time-series-selector-control" class="visualization-selector">
                                 <summary id="time-series-selector-summary">Select time series</summary>
                                 <div id="time-series-selector-options" class="visualization-options"></div>
@@ -148,6 +220,18 @@
                         </div>
                     </div>
                     <svg id="time-series-chart" class="time-series-chart" role="img"></svg>
+                    <div class="time-series-visualization-footer">
+                        <button
+                            id="z-normalization-toggle"
+                            class="z-normalization-toggle"
+                            type="button"
+                            aria-pressed="true"
+                        >Visualize Z-normalization</button>
+                        <div class="z-normalization-legend" aria-label="Graph line legend">
+                            <span>standard : <span class="z-normalization-legend-standard">-</span></span>
+                            <span>; normalized : <span class="z-normalization-legend-normalized">-</span></span>
+                        </div>
+                    </div>
                     <div
                         id="time-series-hover-tooltip"
                         class="dataset-info-card time-series-hover-tooltip"
@@ -192,20 +276,97 @@
         </div>
 
         <div class="panel right-panel">
-            <h2>Pairwise Comparison Graph</h2>
-            <div id="pairwise-graph" class="pairwise-graph" role="img" aria-label="Visualization of pairwise comparisons">
-                <p class="pairwise-graph-placeholder">Pairwise comparison graph will appear here.</p>
+            <h2 id="distance-animation-heading">Pairwise Distance Animation</h2>
+            <div
+                id="pairwise-graph"
+                class="pairwise-graph"
+                role="region"
+                aria-labelledby="distance-animation-heading"
+            >
+                <p id="distance-animation-placeholder" class="pairwise-graph-placeholder">
+                    Compare datasets to animate an example series pair.
+                </p>
+                <div id="distance-animation" class="distance-animation" hidden>
+                    <div class="distance-animation-selectors" role="group" aria-label="Choose the datasets to compare">
+                        <details id="distance-animation-selector-a" class="distance-dataset-selector">
+                            <summary id="distance-animation-selector-a-summary">Dataset 1</summary>
+                            <div
+                                id="distance-animation-selector-a-options"
+                                class="distance-dataset-options"
+                                role="group"
+                                aria-label="Choose the first dataset"
+                            ></div>
+                        </details>
+                        <span class="distance-animation-selectors-vs" aria-hidden="true">vs</span>
+                        <details id="distance-animation-selector-b" class="distance-dataset-selector">
+                            <summary id="distance-animation-selector-b-summary">Dataset 2</summary>
+                            <div
+                                id="distance-animation-selector-b-options"
+                                class="distance-dataset-options"
+                                role="group"
+                                aria-label="Choose the second dataset"
+                            ></div>
+                        </details>
+                    </div>
+                    <div class="distance-animation-header">
+                        <div>
+                            <p id="distance-animation-series-label"></p>
+                        </div>
+                        <div class="distance-animation-distance">
+                            <span id="distance-animation-method"></span>
+                            <strong id="distance-animation-distance-value"></strong>
+                        </div>
+                    </div>
+                    <svg
+                        id="distance-animation-chart"
+                        class="distance-animation-chart"
+                        viewBox="0 0 620 260"
+                        role="img"
+                    ></svg>
+                    <p id="distance-animation-status" class="distance-animation-status" aria-live="polite"></p>
+                    <p class="distance-animation-note">
+                        Illustrative pairing: first series, first dimension. Distance above is the full dataset result.
+                    </p>
+                    <div id="distance-animation-legend" class="distance-animation-legend" role="group" aria-label="Dataset colors">
+                        <span class="distance-animation-legend-item">
+                            <span id="distance-animation-legend-color-a" class="distance-animation-legend-color" aria-hidden="true"></span>
+                            <span id="distance-animation-legend-label-a"></span>
+                        </span>
+                        <span class="distance-animation-legend-item">
+                            <span id="distance-animation-legend-color-b" class="distance-animation-legend-color" aria-hidden="true"></span>
+                            <span id="distance-animation-legend-label-b"></span>
+                        </span>
+                    </div>
+                </div>
             </div>
+            <button id="distance-animation-replay" class="compare-button distance-animation-replay" type="button" hidden>
+                Replay animation
+            </button>
         </div>
 
     </div>
 
-    <div class="site-description">
-        <p>- This interactive tool compares time-series datasets and helps users explore their similarities.</p>
-        <p>- Use the left panel to upload datasets and select the comparison method.</p>
-        <p>- The middle panel displays the comparison results.</p>
-        <p>- The right panel will show the steps involved in the calculation.</p>
-        <p>- The heatmap uses the selected method to calculate pairwise dataset distances, averaging the distances between their time series. Each distance is shown symmetrically in the matrix; blue indicates smaller distances and red indicates larger ones.</p>
+    <div class="site-description" aria-labelledby="usage-guide-title">
+        <h2 id="usage-guide-title">Quick guide</h2>
+        <p>
+            <strong>Compare :</strong> Upload .ts, .txt or .arff files and select at least two datasets.
+            Use <em>Select method</em> to choose a representative strategy and distance; set window or slope when available,
+            then click <em>Compare selected sets</em>.
+        </p>
+        <p>
+            <strong>Explore :</strong> The Dataset Map shows datasets and pairwise distances; the Heat Map shows the distance
+            matrix. Change its color gradient, zoom with the mouse wheel, or drag to pan. Click a map point to view a
+            dataset's series; choose its class, series and dimension, hover for values, and toggle Z-normalization.
+        </p>
+        <p>
+            <strong>Animation :</strong> Choose any two compared datasets in the right panel. The colored curves illustrate
+            their first series and dimension; the displayed distance is the actual full-pair result. Click
+            <em>Replay animation</em> to replay it.
+        </p>
+        <p>
+            <strong>More :</strong> Rename or recolor datasets, toggle their selection, export CSV/ODS/PDF/LaTeX,
+            clear the comparison cache, or switch between light and dark themes.
+        </p>
     </div>
 
     <footer class="site-footer">
@@ -223,17 +384,20 @@
     </footer>
 
     <form id="csrf-token-form" hidden>{% csrf_token %}</form>
-    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261110-series-length" defer></script>
-    <script src="{% static 'core/js/modify_dataset_name.js' %}?v=20261023-modify-name" defer></script>
+    <script src="{% static 'core/js/upload_dataset.js' %}?v=20261126-edit-button" defer></script>
+    <script src="{% static 'core/js/modify_dataset_name.js' %}?v=20261126-edit-button" defer></script>
+    <script src="{% static 'core/js/theme_toggle.js' %}?v=20261126-light-mode" defer></script>
     <script src="{% static 'core/js/set_deletion.js' %}" defer></script>
-    <script src="{% static 'core/js/method_selection.js' %}" defer></script>
-    <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261119-timeseries-view" defer></script>
-    <script src="{% static 'core/js/graph/time_series_visualization.js' %}?v=20261120-hover-module" defer></script>
+    <script src="{% static 'core/js/method_selection.js' %}?v=20261127-method-config-4" defer></script>
+    <script src="{% static 'core/js/graph/dataset_map.js' %}?v=20261126-info-close" defer></script>
+    <script src="{% static 'core/js/z_normalization.js' %}?v=20261127-z-normalization" defer></script>
+    <script src="{% static 'core/js/graph/time_series_visualization.js' %}?v=20261127-z-normalization-axis-spacing-2" defer></script>
     <script src="{% static 'core/js/graph/time_series_hover.js' %}?v=20261120-hover-module" defer></script>
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261119-export-colormap" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
-    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261120-delete-cache" defer></script>
+    <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261127-method-config-4" defer></script>
+    <script src="{% static 'core/js/animation/distance_animation.js' %}?v=20261127-distance-animation-2" defer></script>
     <script src="{% static 'core/js/delete_cache.js' %}?v=20261120-delete-cache" defer></script>
-    <script src="{% static 'core/js/exportation/index.js' %}?v=20261119-export-colormap" defer></script>
+    <script src="{% static 'core/js/exportation/index.js' %}?v=20261127-method-config" defer></script>
 </body>
 </html>

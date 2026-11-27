@@ -135,6 +135,110 @@ class DatasetDistanceTests(SimpleTestCase):
         self.assertTrue((distances.diagonal() == 0).all())
         self.assertTrue((distances == distances.T).all())
 
+    def test_representative_strategies_support_different_dimension_counts(self):
+        datasets = [
+            [
+                [[0.0, 1.0, 2.0], [1.0, 2.0, 3.0]],
+                [[0.0, 2.0, 3.0], [2.0, 3.0, 4.0]],
+            ],
+            [
+                [[0.0, 1.0, 2.0]],
+                [[1.0, 2.0, 3.0]],
+            ],
+        ]
+        strategies = ("eba", "medoid", "subgradient")
+
+        for strategy in strategies:
+            representative_parameters = {}
+            if strategy in {"eba", "subgradient"}:
+                representative_parameters.update(max_iters=2, tol=1e-5)
+            if strategy == "subgradient":
+                representative_parameters.update(
+                    initial_step_size=0.05,
+                    final_step_size=0.005,
+                )
+
+            with self.subTest(strategy=strategy):
+                distances = pairwise_dataset_distances(
+                    datasets,
+                    "dtw",
+                    strategy,
+                    {"window": 0.5},
+                    representative_parameters,
+                )
+
+                self.assertEqual(distances.shape, (2, 2))
+                self.assertTrue(np.isfinite(distances).all())
+                self.assertTrue((distances == distances.T).all())
+
+    def test_barycenter_strategies_reject_unequal_series_lengths(self):
+        datasets = [
+            [[0.0, 1.0], [0.0, 1.0, 2.0]],
+            [[0.0, 1.0], [0.0, 1.0, 2.0]],
+        ]
+
+        with self.assertRaisesRegex(ValueError, "requires equal-length"):
+            pairwise_dataset_distances(datasets, "dtw", "eba")
+
+    def test_distance_methods_accept_window_and_slope_with_eba_selection(self):
+        datasets = [
+            [
+                [0.0, 1.0, 0.0, 2.0, 1.0, 3.0, 2.0, 4.0],
+                [1.0, 0.0, 2.0, 1.0, 3.0, 2.0, 4.0, 3.0],
+            ],
+            [
+                [0.5, 1.5, 0.5, 2.5, 1.5, 3.5, 2.5, 4.5],
+                [1.5, 0.5, 2.5, 1.5, 3.5, 2.5, 4.5, 3.5],
+            ],
+        ]
+        methods = (
+            "dtw",
+            "dtw_gi",
+            "shape_dtw",
+            "ddtw",
+            "wdtw",
+            "wddtw",
+            "adtw",
+            "soft_dtw",
+            "msm",
+            "twe",
+        )
+
+        for method in methods:
+            distance_parameters = {
+                "window": 0.5,
+                "itakura_max_slope": 0.5,
+            }
+            with self.subTest(method=method):
+                distances = pairwise_dataset_distances(
+                    datasets,
+                    method,
+                    "eba",
+                    distance_parameters,
+                )
+
+                self.assertTrue(np.isfinite(distances).all())
+                self.assertEqual(distances.shape, (2, 2))
+
+    def test_rejects_nonpositive_barycenter_parameters(self):
+        datasets = [[[0.0, 1.0]], [[1.0, 2.0]]]
+
+        with self.assertRaises(ValueError):
+            pairwise_dataset_distances(
+                datasets,
+                "dtw",
+                "eba",
+                representative_parameters={"tol": 0},
+            )
+
+        with self.assertRaises(ValueError):
+            mean_pairwise_distance(
+                [[0.0, 1.0]],
+                [[1.0, 2.0]],
+                "twe",
+                {"nu": 0},
+            )
+
     def test_projects_pairwise_distances_to_two_dimensions_with_tsne(self):
         distances = np.array([
             [0.0, 1.0, 2.0],

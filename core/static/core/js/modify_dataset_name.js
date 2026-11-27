@@ -2,18 +2,24 @@
     const datasetList = document.getElementById("dataset-list");
 
     datasetList.addEventListener("click", (event) => {
-        const nameButton = event.target.closest(".dataset-name");
-        if (!nameButton) {
+        const editButton = event.target.closest(".dataset-name-edit");
+        if (!editButton) {
             return;
         }
 
-        const checkbox = nameButton.closest(".dataset-row").querySelector('input[type="checkbox"]');
+        const row = editButton.closest(".dataset-row");
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        const nameElement = row.querySelector(".dataset-name");
+        if (!nameElement) {
+            return;
+        }
         const input = document.createElement("input");
         input.type = "text";
         input.className = "dataset-name-input";
         input.value = checkbox.value;
         input.setAttribute("aria-label", `Modifier le nom de ${checkbox.value}`);
-        nameButton.replaceWith(input);
+        editButton.disabled = true;
+        nameElement.replaceWith(input);
         input.focus();
         input.select();
 
@@ -26,14 +32,16 @@
             const name = save && newName ? newName : checkbox.value;
             checkbox.value = name;
 
-            const replacement = document.createElement("button");
-            replacement.type = "button";
+            const replacement = document.createElement("span");
             replacement.className = "dataset-name";
             replacement.textContent = name;
-            replacement.setAttribute("aria-label", `Modifier le nom de ${name}`);
             input.replaceWith(replacement);
 
             const row = replacement.closest(".dataset-row");
+            const editButton = row.querySelector(".dataset-name-edit");
+            editButton.disabled = false;
+            editButton.setAttribute("aria-label", `Rename ${name}`);
+            editButton.title = `Rename ${name}`;
             row.querySelector(".color-picker-toggle").setAttribute(
                 "aria-label",
                 `Customize color for ${name}`

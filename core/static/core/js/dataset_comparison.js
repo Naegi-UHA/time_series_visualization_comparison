@@ -10,9 +10,9 @@
     let latestResult = null;
     let latestSelectedSets = [];
 
-    function getCacheKey(method, selectedSets) {
+    function getCacheKey(settings, selectedSets) {
         return JSON.stringify([
-            method,
+            settings,
             selectedSets.map((checkbox) => checkbox.dataset.datasetId),
         ]);
     }
@@ -59,19 +59,24 @@
         comparisonStatus.textContent = "Calculating distance...";
 
         try {
-            const method = currentMethod.dataset.method;
-            const cacheKey = getCacheKey(method, selectedSets);
+            const settings = JSON.parse(currentMethod.dataset.settings);
+            const cacheKey = getCacheKey(settings, selectedSets);
             let result = comparisonCache.get(cacheKey);
             const cached = result !== undefined;
 
             if (!cached) {
+                const { distance, ...comparisonSettings } = settings;
                 const response = await fetch(compareButton.dataset.url, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         "X-CSRFToken": csrfToken,
                     },
-                    body: JSON.stringify({ method, datasets }),
+                    body: JSON.stringify({
+                        ...comparisonSettings,
+                        method: distance,
+                        datasets,
+                    }),
                 });
                 result = await response.json();
                 if (!response.ok) {
@@ -86,9 +91,11 @@
             document.dispatchEvent(new CustomEvent("comparisoncomplete", {
                 detail: { result, selectedSets },
             }));
+            const methodLabel = result.method_label || result.method.toUpperCase();
+            const strategyNotice = result.strategy_notice ? ` ${result.strategy_notice}` : "";
             comparisonStatus.textContent = cached
-                ? `Cached result reused: ${result.datasets.length} datasets compared using ${result.method.toUpperCase()}.`
-                : `${result.datasets.length} datasets compared using ${result.method.toUpperCase()}.`;
+                ? `Cached result reused: ${result.datasets.length} datasets compared using ${methodLabel}.${strategyNotice}`
+                : `${result.datasets.length} datasets compared using ${methodLabel}.${strategyNotice}`;
         } catch (error) {
             comparisonStatus.textContent = `Comparison failed: ${error.message}`;
         } finally {

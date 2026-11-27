@@ -93,6 +93,103 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()["distances"]), 1)
 
+    def test_compare_endpoint_accepts_representative_and_distance_settings(self):
+        response = self.client.post(
+            reverse("compare-datasets"),
+            data=json.dumps({
+                "method": "dtw",
+                "strategy": "medoid",
+                "distance_parameters": {"window": 0.5},
+                "representative_parameters": {},
+                "datasets": [
+                    {"name": "first", "series": [{"series": [0.0, 1.0, 2.0]}]},
+                    {"name": "second", "series": [{"series": [0.0, 2.0, 3.0]}]},
+                ],
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["strategy"], "medoid")
+        self.assertEqual(response.json()["method_label"], "Medoid + DTW")
+
+    def test_compare_endpoint_compares_two_datasets_with_default_eba_settings(self):
+        response = self.client.post(
+            reverse("compare-datasets"),
+            data=json.dumps({
+                "method": "dtw",
+                "strategy": "eba",
+                "distance_parameters": {},
+                "datasets": [
+                    {
+                        "name": "first",
+                        "series": [
+                            {"series": [0.0, 1.0, 2.0]},
+                            {"series": [1.0, 2.0, 3.0]},
+                        ],
+                    },
+                    {
+                        "name": "second",
+                        "series": [
+                            {"series": [0.0, 2.0, 3.0]},
+                            {"series": [2.0, 3.0, 4.0]},
+                        ],
+                    },
+                ],
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(response.json()["method_label"], "Elastic Barycenter Averaging + DTW")
+        self.assertEqual(len(response.json()["distances"]), 1)
+
+    def test_compare_endpoint_uses_medoid_for_dtw_gi(self):
+        response = self.client.post(
+            reverse("compare-datasets"),
+            data=json.dumps({
+                "method": "dtw_gi",
+                "strategy": "eba",
+                "distance_parameters": {
+                    "window": 0.5,
+                    "itakura_max_slope": 0.5,
+                },
+                "datasets": [
+                    {
+                        "name": "first",
+                        "series": [{"series": [0.0, 1.0, 0.0, 2.0, 1.0, 3.0]}],
+                    },
+                    {
+                        "name": "second",
+                        "series": [{"series": [1.0, 2.0, 1.0, 3.0, 2.0, 4.0]}],
+                    },
+                ],
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(response.json()["strategy"], "medoid")
+        self.assertEqual(response.json()["method_label"], "Medoid + DTW_GI")
+        self.assertIn("Medoid was selected", response.json()["strategy_notice"])
+
+    def test_compare_endpoint_rejects_invalid_distance_parameters(self):
+        response = self.client.post(
+            reverse("compare-datasets"),
+            data=json.dumps({
+                "method": "twe",
+                "distance_parameters": {"nu": 0},
+                "datasets": [
+                    {"name": "first", "series": [{"series": [0.0, 1.0]}]},
+                    {"name": "second", "series": [{"series": [0.0, 2.0]}]},
+                ],
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("nu must be at least", response.json()["error"])
+
     def test_compare_endpoint_returns_pairwise_distances_and_coordinates(self):
         response = self.client.post(
             reverse("compare-datasets"),
@@ -138,11 +235,21 @@ class DatasetComparisonViewTests(SimpleTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'accept=".txt,.ts,.arff,text/plain"')
+        self.assertContains(response, 'href="https://github.com/Naegi-UHA"')
+        self.assertContains(response, 'href="https://github.com/LinkCheat"')
+        self.assertContains(response, 'href="https://ai-fawaz.fr/"')
         self.assertContains(response, 'id="toggle-all-datasets"')
         self.assertContains(response, "Toggle all")
         self.assertContains(response, 'id="heatmap-color-selector"')
         self.assertContains(response, 'data-colormap="Oranges" aria-pressed="true"')
         self.assertContains(response, 'id="time-series-visualization"')
+        self.assertContains(response, 'id="z-normalization-toggle"')
+        self.assertContains(response, 'aria-pressed="true"')
+        self.assertContains(response, 'standard :')
+        self.assertContains(response, 'normalized :')
+        self.assertContains(response, "z_normalization.js")
+        self.assertContains(response, 'id="class-selector-control"')
+        self.assertContains(response, 'id="class-selector-options"')
         self.assertContains(response, "Quit visualization")
         self.assertContains(response, 'id="time-series-chart"')
         self.assertContains(response, 'id="time-series-hover-tooltip"')
@@ -153,6 +260,23 @@ class DatasetComparisonViewTests(SimpleTestCase):
         self.assertContains(response, 'id="delete-cache-button"')
         self.assertContains(response, "Delete cache")
         self.assertContains(response, "delete_cache.js")
+        self.assertContains(response, 'id="theme-toggle"')
+        self.assertContains(response, "theme_toggle.js")
+        self.assertContains(response, 'id="method-settings-trigger"')
+        self.assertContains(response, 'id="method-settings-panel"')
+        self.assertContains(response, "Elastic Barycenter Averaging (EBA)")
+        self.assertContains(response, "Pairwise mean (current)")
+        self.assertContains(response, 'id="distance-method"')
+        self.assertContains(response, 'id="representative-method"')
+        self.assertContains(response, 'id="distance-animation-replay"')
+        self.assertContains(response, 'id="distance-animation-selector-a"')
+        self.assertContains(response, 'id="distance-animation-selector-b"')
+        self.assertContains(response, 'id="distance-animation-legend"')
+        self.assertContains(response, "Replay animation")
+        self.assertContains(response, "animation/distance_animation.js")
+        self.assertContains(response, "Other metric parameters use Aeon's defaults.")
+        self.assertNotContains(response, "Representative parameters")
+        self.assertNotContains(response, 'id="representative-parameters"')
 
     def test_export_page_renders_format_picker(self):
         response = self.client.get(reverse("export-page"))
