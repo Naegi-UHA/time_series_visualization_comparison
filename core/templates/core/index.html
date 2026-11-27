@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time-Series Dataset Similarity Explorer</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261127-method-config-2">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261127-site-description">
 </head>
 <body>
     <header class="site-header">
@@ -16,8 +16,16 @@
             <a href="https://github.com/Naegi-UHA/time_series_visualization_comparison" target="_blank" rel="noopener noreferrer">
                 Github repository
             </a>
-            <p>Students: RUNSER Lucas and BERNARDI Nicolas</p>
-            <p>Professor: Ali El Hadi ISMAIL FAWAZ</p>
+            <p>
+                Students :
+                <a href="https://github.com/Naegi-UHA" target="_blank" rel="noopener noreferrer">RUNSER Lucas</a>
+                and
+                <a href="https://github.com/LinkCheat" target="_blank" rel="noopener noreferrer">BERNARDI Nicolas</a>
+            </p>
+            <p>
+                Professor :
+                <a href="https://ai-fawaz.fr/" target="_blank" rel="noopener noreferrer">ISMAIL FAWAZ Ali El Hadi</a>
+            </p>
             <button
                 id="theme-toggle"
                 class="theme-toggle"
@@ -268,20 +276,97 @@
         </div>
 
         <div class="panel right-panel">
-            <h2>Pairwise Comparison Graph</h2>
-            <div id="pairwise-graph" class="pairwise-graph" role="img" aria-label="Visualization of pairwise comparisons">
-                <p class="pairwise-graph-placeholder">Pairwise comparison graph will appear here.</p>
+            <h2 id="distance-animation-heading">Pairwise Distance Animation</h2>
+            <div
+                id="pairwise-graph"
+                class="pairwise-graph"
+                role="region"
+                aria-labelledby="distance-animation-heading"
+            >
+                <p id="distance-animation-placeholder" class="pairwise-graph-placeholder">
+                    Compare datasets to animate an example series pair.
+                </p>
+                <div id="distance-animation" class="distance-animation" hidden>
+                    <div class="distance-animation-selectors" role="group" aria-label="Choose the datasets to compare">
+                        <details id="distance-animation-selector-a" class="distance-dataset-selector">
+                            <summary id="distance-animation-selector-a-summary">Dataset 1</summary>
+                            <div
+                                id="distance-animation-selector-a-options"
+                                class="distance-dataset-options"
+                                role="group"
+                                aria-label="Choose the first dataset"
+                            ></div>
+                        </details>
+                        <span class="distance-animation-selectors-vs" aria-hidden="true">vs</span>
+                        <details id="distance-animation-selector-b" class="distance-dataset-selector">
+                            <summary id="distance-animation-selector-b-summary">Dataset 2</summary>
+                            <div
+                                id="distance-animation-selector-b-options"
+                                class="distance-dataset-options"
+                                role="group"
+                                aria-label="Choose the second dataset"
+                            ></div>
+                        </details>
+                    </div>
+                    <div class="distance-animation-header">
+                        <div>
+                            <p id="distance-animation-series-label"></p>
+                        </div>
+                        <div class="distance-animation-distance">
+                            <span id="distance-animation-method"></span>
+                            <strong id="distance-animation-distance-value"></strong>
+                        </div>
+                    </div>
+                    <svg
+                        id="distance-animation-chart"
+                        class="distance-animation-chart"
+                        viewBox="0 0 620 260"
+                        role="img"
+                    ></svg>
+                    <p id="distance-animation-status" class="distance-animation-status" aria-live="polite"></p>
+                    <p class="distance-animation-note">
+                        Illustrative pairing: first series, first dimension. Distance above is the full dataset result.
+                    </p>
+                    <div id="distance-animation-legend" class="distance-animation-legend" role="group" aria-label="Dataset colors">
+                        <span class="distance-animation-legend-item">
+                            <span id="distance-animation-legend-color-a" class="distance-animation-legend-color" aria-hidden="true"></span>
+                            <span id="distance-animation-legend-label-a"></span>
+                        </span>
+                        <span class="distance-animation-legend-item">
+                            <span id="distance-animation-legend-color-b" class="distance-animation-legend-color" aria-hidden="true"></span>
+                            <span id="distance-animation-legend-label-b"></span>
+                        </span>
+                    </div>
+                </div>
             </div>
+            <button id="distance-animation-replay" class="compare-button distance-animation-replay" type="button" hidden>
+                Replay animation
+            </button>
         </div>
 
     </div>
 
-    <div class="site-description">
-        <p>- This interactive tool compares time-series datasets and helps users explore their similarities.</p>
-        <p>- Use the left panel to upload datasets and select the comparison method.</p>
-        <p>- The middle panel displays the comparison results.</p>
-        <p>- The right panel will show the steps involved in the calculation.</p>
-        <p>- Each dataset is represented using the selected strategy (for example, one barycenter or medoid per dimension), then the selected distance is averaged across all pairs of representatives. Pairwise mean instead compares the original series directly. The resulting distances fill a symmetric matrix; blue indicates smaller distances and red indicates larger ones.</p>
+    <div class="site-description" aria-labelledby="usage-guide-title">
+        <h2 id="usage-guide-title">Quick guide</h2>
+        <p>
+            <strong>Compare :</strong> Upload .ts, .txt or .arff files and select at least two datasets.
+            Use <em>Select method</em> to choose a representative strategy and distance; set window or slope when available,
+            then click <em>Compare selected sets</em>.
+        </p>
+        <p>
+            <strong>Explore :</strong> The Dataset Map shows datasets and pairwise distances; the Heat Map shows the distance
+            matrix. Change its color gradient, zoom with the mouse wheel, or drag to pan. Click a map point to view a
+            dataset's series; choose its class, series and dimension, hover for values, and toggle Z-normalization.
+        </p>
+        <p>
+            <strong>Animation :</strong> Choose any two compared datasets in the right panel. The colored curves illustrate
+            their first series and dimension; the displayed distance is the actual full-pair result. Click
+            <em>Replay animation</em> to replay it.
+        </p>
+        <p>
+            <strong>More :</strong> Rename or recolor datasets, toggle their selection, export CSV/ODS/PDF/LaTeX,
+            clear the comparison cache, or switch between light and dark themes.
+        </p>
     </div>
 
     <footer class="site-footer">
@@ -311,6 +396,7 @@
     <script src="{% static 'core/js/graph/heat_map.js' %}?v=20261119-export-colormap" defer></script>
     <script src="{% static 'core/js/graph_selection.js' %}?v=20261023-heatmap" defer></script>
     <script src="{% static 'core/js/dataset_comparison.js' %}?v=20261127-method-config-4" defer></script>
+    <script src="{% static 'core/js/animation/distance_animation.js' %}?v=20261127-distance-animation-2" defer></script>
     <script src="{% static 'core/js/delete_cache.js' %}?v=20261120-delete-cache" defer></script>
     <script src="{% static 'core/js/exportation/index.js' %}?v=20261127-method-config" defer></script>
 </body>
